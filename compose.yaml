@@ -1,5 +1,5 @@
 services:
-  web: 
+  backend:
     build:
       context: ./api/app
       target: builder
@@ -7,6 +7,16 @@ services:
     # (default stop signal from Compose is SIGTERM)
     stop_signal: SIGINT
     ports:
-      - '8000:8000'
+      - "8000:8000"
     volumes:
       - ./api/app:/api/app
+
+  frontend:
+    build:
+      context: ./front
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./front:/front
+    # environment:
+    #   - NEXT_PUBLIC_API_URL=http://localhost:8000/api
