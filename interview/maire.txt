@@ -1,6 +1,0 @@
-demande
-    mep d une news-letter
-    application compatible smartphone
-    prise de rdv administratif par administre
-    visuel par administre des evenements a venir et passe (agenda)
-    
