@@ -1,1 +1,3 @@
 10-01 choix du sujet mep github miro trello et docker
+
+11-01 dans docker next et flask ok, use case ok et debut determination templating
