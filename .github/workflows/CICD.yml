@@ -1,5 +1,7 @@
 name: Industrialisation continue sur le serveur Alwaysdata
-on: push
+on:
+  push:
+    branches: main
 jobs:
   Connexion:
     runs-on: ubuntu-latest
