@@ -26,51 +26,69 @@ jobs:
           script: |
             last_directory=$(basename ${{ runner.workspace }})
             cd $HOME/www/
+
+            if [ -d "$last_directory" ]; then
+                echo "Répertoire trouvé, suppression..."
+                rm -rf "$last_directory"
+            else
+                echo "Répertoire non trouvé, rien à supprimer."
+            fi
+
             git clone https://github.com/${{ github.repository }}.git
+                          
+            cd "$last_directory"
 
-  front-deployement:
-    needs: Connexion
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            # Déplacer tous les fichiers (y compris les fichiers cachés) vers la racine
+            mv * .[^.]* $HOME/www/
 
-      #   - name: Moove to front
-      #     run: |
-      #         cd front
-      #         ls -a
+            cd ../
 
-      - name: Install dependencies
-        run: |
-          cd front 
-          npm install
+            # Supprimer le répertoire cloné une fois son contenu déplacé
+            rm -rf "$last_directory"
 
-      - name: build app
-        run: |
-          cd front 
-          npm run build
+#   front-deployement:
+#     needs: Connexion
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      #   - name: List generated files
-      #     run: |
-      #       cd front
-      #       ls -R out
+#       #   - name: Moove to front
+#       #     run: |
+#       #         cd front
+#       #         ls -a
 
-      - name: Transférer le fichier out
-        uses: appleboy/scp-action@v0.1.0
-        with:
-          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "front/out/*"
-          target: "$HOME/www/front/"
+#       - name: Install dependencies
+#         run: |
+#           cd front 
+#           npm install
 
-      - name: Réorganiser les fichiers sur le serveur
-        uses: appleboy/ssh-action@master
-        with:
-          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd $HOME/www/front/
-            mv front/out/* .
-            rm -rf front/
+#       - name: build app
+#         run: |
+#           cd front 
+#           npm run build
+
+#       #   - name: List generated files
+#       #     run: |
+#       #       cd front
+#       #       ls -R out
+
+#       - name: Transférer le fichier out
+#         uses: appleboy/scp-action@v0.1.0
+#         with:
+#           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.PASSWORD }}
+#           source: "front/out/*"
+#           target: "$HOME/www/front/"
+
+#       - name: Réorganiser les fichiers sur le serveur
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.PASSWORD }}
+#           script: |
+#             cd $HOME/www/front/
+#             mv front/out/* .
+#             rm -rf front/
