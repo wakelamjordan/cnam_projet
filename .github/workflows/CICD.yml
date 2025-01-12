@@ -19,11 +19,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      #   - name: Moove to front
+      #     run: |
+      #         cd front
+      #         ls -a
+
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd front 
+          npm install
 
       - name: build app
-        run: npm run build
+        run: |
+          cd front 
+          npm run build
 
       - name: List generated files
-        run: ls -R out
+        run: |
+          cd front 
+          ls -R out
