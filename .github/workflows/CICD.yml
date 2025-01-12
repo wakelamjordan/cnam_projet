@@ -12,4 +12,18 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd $HOME/www/
-            echo "connexion reussi"
+
+  front-deployement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: action/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: build app
+        run: npm run build
+
+      - name: List generated files
+        run: ls -R out
