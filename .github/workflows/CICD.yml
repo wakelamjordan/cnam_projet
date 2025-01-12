@@ -12,8 +12,10 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd $HOME/www/
+            rm -r front/*
 
   front-deployement:
+    needs: Connexion
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -34,7 +36,27 @@ jobs:
           cd front 
           npm run build
 
-      - name: List generated files
-        run: |
-          cd front 
-          ls -R out
+    #   - name: List generated files
+    #     run: |
+    #       cd front 
+    #       ls -R out
+
+      - name: Transférer le fichier out
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "front/out/*"
+          target: "$HOME/www/front/"
+
+      - name: Réorganiser les fichiers sur le serveur
+        uses: appleboy/ssh-action@master
+        with:
+          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd $HOME/www/front/
+            mv front/out/* .
+            rm -rf front/
