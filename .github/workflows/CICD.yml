@@ -46,49 +46,49 @@ jobs:
             # Supprimer le répertoire cloné une fois son contenu déplacé
             rm -rf "$last_directory"
 
-#   front-deployement:
-#     needs: Connexion
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
+  front-deployement:
+    needs: Connexion
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-#       #   - name: Moove to front
-#       #     run: |
-#       #         cd front
-#       #         ls -a
+      #   - name: Moove to front
+      #     run: |
+      #         cd front
+      #         ls -a
 
-#       - name: Install dependencies
-#         run: |
-#           cd front 
-#           npm install
+      - name: Install dependencies
+        run: |
+          cd front 
+          npm install
 
-#       - name: build app
-#         run: |
-#           cd front 
-#           npm run build
+      - name: build app
+        run: |
+          cd front 
+          npm run build
 
-#       #   - name: List generated files
-#       #     run: |
-#       #       cd front
-#       #       ls -R out
+      #   - name: List generated files
+      #     run: |
+      #       cd front
+      #       ls -R out
 
-#       - name: Transférer le fichier out
-#         uses: appleboy/scp-action@v0.1.0
-#         with:
-#           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-#           username: ${{ secrets.USERNAME }}
-#           password: ${{ secrets.PASSWORD }}
-#           source: "front/out/*"
-#           target: "$HOME/www/front/"
+      - name: Transférer le fichier out
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "front/out/*"
+          target: "$HOME/www/front/"
 
-#       - name: Réorganiser les fichiers sur le serveur
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
-#           username: ${{ secrets.USERNAME }}
-#           password: ${{ secrets.PASSWORD }}
-#           script: |
-#             cd $HOME/www/front/
-#             mv front/out/* .
-#             rm -rf front/
+      - name: Réorganiser les fichiers sur le serveur
+        uses: appleboy/ssh-action@master
+        with:
+          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd $HOME/www/front/
+            mv front/out/* .
+            rm -rf front/
