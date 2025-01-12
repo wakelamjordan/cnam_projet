@@ -1,0 +1,15 @@
+name: Industrialisation continue sur le serveur Alwaysdata
+on: push
+jobs:
+  Connexion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Connexion SSH avec le serveur
+        uses: appleboy/ssh-action@master
+        with:
+          host: "ssh-${{ secrets.USERNAME }}.alwaysdata.net"
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd $HOME/www/
+            echo "connexion reussi"
