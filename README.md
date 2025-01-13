@@ -1,6 +1,6 @@
 # cnam_projet
 
-1- projet
+1- projete
     dans le cadre du projet en bînome de 120h
     projet de plateforme pour une mairie
 
