@@ -5,3 +5,5 @@ https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage.html
 https://flask.palletsprojects.com/en/stable/tutorial/database/
 
 "mailto:firstname.name@some.org?cc=another.name@another.org,third.name@same.org &subject=Westside%20Community%20Plan%20Update%20Objection &body= Dear%20Councilwoman%20"
+
+https://pypi.org/
