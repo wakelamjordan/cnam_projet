@@ -9,3 +9,5 @@ https://flask.palletsprojects.com/en/stable/tutorial/database/
 https://pypi.org/
 
 https://flask-jwt-extended.readthedocs.io/en/stable/basic_usage.html
+
+https://medium.com/@arslandevs/minimal-flask-application-using-mvc-design-pattern-842845cef703
