@@ -1,32 +1,36 @@
 services:
   backend:
     build:
-      context: ./api/app
-      target: builder
-    # flask requires SIGINT to stop gracefully
-    # (default stop signal from Compose is SIGTERM)
-    stop_signal: SIGINT
+      context: ./api  # Le contexte contient les fichiers nécessaires pour le Dockerfile
+      dockerfile: Dockerfile.api
     ports:
       - "8000:8000"
     volumes:
-      - ./api/app:/api/app
-      - ./data:/data
+      - ./api:/app
+    tty: true  # Assure une session interactive
+    stdin_open: true  # Permet d'envoyer des commandes au conteneur
+    working_dir: /app/api  # Définit le répertoire de travail
+    command: python3 __init__.py  # Démarre le conteneur avec bash
+    # command: python app.py
+    # command: >
+    #   sh -c "pip3 install -r /api/app/requirements.txt && python3 app.py"
 
-  sqlite:
-    build:
-      context: .
-      dockerfile: Dockerfile.sqlite
-    volumes:
-      - ./data:/data
-    stdin_open: true
-    tty: true
 
-  frontend:
-    build:
-      context: ./front
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./front:/front
+  # sqlite:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.sqlite
+  #   volumes:
+  #     - ./data:/data
+  #   stdin_open: true
+  #   tty: true
+
+  # frontend:
+  #   build:
+  #     context: ./front
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./front:/front
     # environment:
     #   - NEXT_PUBLIC_API_URL=http://localhost:8000/api
