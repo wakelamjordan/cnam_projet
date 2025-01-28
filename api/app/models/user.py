@@ -13,4 +13,10 @@ class User(Base):
         self.email = email
 
     def __repr__(self):
-        return f'<User id={self.id!r} name={self.name!r} email={self.email!r}>'
+        return f"<User(id={self.id}, name='{self.name}', email='{self.email}')>"
+
+    def to_dict(self):
+        return {'id': self.id, 'name': self.name, 'email': self.email}
+
+    # def __repr__(self):
+    #     return f'<User id={self.id!r} name={self.name!r} email={self.email!r}>'

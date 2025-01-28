@@ -3,6 +3,8 @@ from app.manager.database import db_session
 
 app = Flask(__name__)
 
+from app.routes import *
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
