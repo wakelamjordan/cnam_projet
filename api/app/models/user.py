@@ -1,7 +1,6 @@
 # Importation des modules nécessaires pour la définition du modèle
 from sqlalchemy import Column, Integer, String, text  # Pour définir les colonnes et types dans la table
-from app.manager.database import Base  # Import de la classe Base pour le mapping ORM
-from app.manager.database import db_session  # Session de la base de données pour exécuter des requêtes
+from app.database import Base # Import de la classe Base pour le mapping ORM
 
 
 # Définition du modèle User
@@ -56,29 +55,18 @@ class User(Base):
         dict : Un dictionnaire contenant les informations de l'utilisateur.
         """
         return {'id': self.id, 'name': self.name, 'email': self.email}
-
-    @staticmethod
-    def query_sql(sql: str, params: list = []):
+    
+    def to_list(result):
         """
-        Méthode statique pour exécuter une requête SQL brute.
-
-        Arguments :
-        ----------
-        sql : str
-            La requête SQL à exécuter.
-        params : list, facultatif
-            Les paramètres à passer à la requête.
+        Convertit un objet User en liste.
 
         Retour :
         -------
-        list : Une liste de dictionnaires représentant les résultats de la requête.
+        list : Une liste contenant les informations de l'utilisateur.
         """
-        # Exécution de la requête SQL avec les paramètres
-        result = db_session.execute(text(sql), params)
-        data = []
-
-        # Transformation des résultats en une liste de dictionnaires
+        data=[]
         for row in result:
             data.append({'id': row.id, 'name': row.name, 'email': row.email})
-
         return data
+
+
