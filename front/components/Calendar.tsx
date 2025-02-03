@@ -2,17 +2,17 @@
 
 import * as React from "react";
 
-import { Calendar } from "@/components/ui/calendar";
+import { Calendar as C} from "@/components/ui/calendar";
 
-export function CalendarDemo() {
+export function Calendar() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   return (
-    <Calendar
+    <C
       mode="single"
       selected={date}
       onSelect={setDate}
-      className="rounded-md border"
+      className="rounded-md"
     />
   );
 }
