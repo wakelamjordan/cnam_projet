@@ -11,10 +11,10 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { InputGroup } from "@/components/InputGroup";
 
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "catégorie1", href: "#", current: false },
+  { name: "catégorie2", href: "#", current: false },
+  { name: "catégorie3", href: "#", current: false },
+  { name: "catégorie4", href: "#", current: false },
 ];
 
 function classNames(...classes) {
