@@ -1,27 +1,73 @@
+"use client";
 import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { InputGroup } from "@/components/InputGroup";
 
-const navigation = [
-  { name: "catégorie1", href: "#", current: false },
-  { name: "catégorie2", href: "#", current: false },
-  { name: "catégorie3", href: "#", current: false },
-  { name: "catégorie4", href: "#", current: false },
-];
+
+
+// function navLink(n = 0, elements = []) {
+//   if (n >= navigation.length) {
+//     return elements; // Base case: return accumulated elements
+//   }
+
+//   const item = navigation[n];
+
+//   if (item.children) {
+//     return navLink(n + 1, [
+//       ...elements,
+//       <div key={item.name} className="relative group">
+//         <span
+//           className={classNames(
+//             item.current
+//               ? "bg-gray-900 text-white"
+//               : "text-white hover:bg-gray-700 hover:text-white",
+//             "rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
+//           )}
+//         >
+//           {item.name}
+//         </span>
+//         <div className="absolute left-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg hidden group-hover:flex flex-col">
+//           {item.children.map((child) => (
+//             <a
+//               key={child.name}
+//               href={child.href}
+//               className="px-3 py-2 text-sm text-black hover:bg-gray-700 hover:text-white rounded-md"
+//             >
+//               {child.name}
+//             </a>
+//           ))}
+//         </div>
+//       </div>,
+//     ]);
+//   } else {
+//     return navLink(n + 1, [
+//       ...elements,
+//       <a
+//         key={item.name}
+//         href={item.href}
+//         aria-current={item.current ? "page" : undefined}
+//         className={classNames(
+//           item.current
+//             ? "bg-gray-900 text-white"
+//             : "text-white hover:bg-gray-700 hover:text-white",
+//           "rounded-md px-3 py-2 text-sm font-medium"
+//         )}
+//       >
+//         {item.name}
+//       </a>,
+//     ]);
+//   }
+// }
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
+export default function Navbar({navigation}) {
   return (
     <div className="w-full">
       <Disclosure as="nav" className="bg-[#ED1D26] rounded">
@@ -52,21 +98,47 @@ export default function Navbar() {
               </div> */}
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.current ? "page" : undefined}
-                      className={classNames(
-                        item.current
-                          ? "bg-gray-900 text-white"
-                          : "text-white hover:bg-gray-700 hover:text-white",
-                        "rounded-md px-3 py-2 text-sm font-medium"
-                      )}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
+                  {navigation.map((item) =>
+                    item.children ? (
+                      <div key={item.name} className="relative group">
+                        <span
+                          className={classNames(
+                            item.current
+                              ? "bg-gray-900 text-white"
+                              : "text-white hover:bg-gray-700 hover:text-white",
+                            "rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
+                          )}
+                        >
+                          {item.name}
+                        </span>
+                        <div className="absolute left-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg hidden group-hover:flex flex-col">
+                          {item.children.map((child) => (
+                            <a
+                              key={child.name}
+                              href={child.href}
+                              className="px-3 py-2 text-sm text-black hover:bg-gray-700 hover:text-white rounded-md"
+                            >
+                              {child.name}
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <a
+                        key={item.name}
+                        href={item.href}
+                        aria-current={item.current ? "page" : undefined}
+                        className={classNames(
+                          item.current
+                            ? "bg-gray-900 text-white"
+                            : "text-white hover:bg-gray-700 hover:text-white",
+                          "rounded-md px-3 py-2 text-sm font-medium"
+                        )}
+                      >
+                        {item.name}
+                      </a>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -74,81 +146,57 @@ export default function Navbar() {
               <div className="hidden md:block">
                 <InputGroup />
               </div>
-              {/* <button
-              type="button"
-              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden"
-            >
-              <span className="absolute -inset-1.5" />
-              <span className="sr-only">View notifications</span>
-              <BellIcon aria-hidden="true" className="size-6" />
-              </button> */}
-
-              {/* Profile dropdown */}
-              {/* <Menu as="div" className="relative ml-3">
-              <div>
-              <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
-              <span className="absolute -inset-1.5" />
-              <span className="sr-only">Open user menu</span>
-              <img
-              alt=""
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-              className="size-8 rounded-full"
-              />
-              </MenuButton>
-              </div>
-              <MenuItems
-              transition
-              className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 ring-1 shadow-lg ring-black/5 transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-              >
-              <MenuItem>
-              <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-              >
-              Your Profile
-              </a>
-              </MenuItem>
-              <MenuItem>
-              <a
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                  >
-                    Settings
-                    </a>
-                    </MenuItem>
-                    <MenuItem>
-                    <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
-                    >
-                    Sign out
-                    </a>
-                    </MenuItem>
-                    </MenuItems>
-                    </Menu> */}
             </div>
           </div>
         </div>
 
         <DisclosurePanel className="sm:hidden">
           <div className="space-y-1 px-2 pt-2 pb-3">
-            {navigation.map((item) => (
-              <DisclosureButton
-                key={item.name}
-                as="a"
-                href={item.href}
-                aria-current={item.current ? "page" : undefined}
-                className={classNames(
-                  item.current
-                    ? "bg-gray-900 text-white"
-                    : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                  "block rounded-md px-3 py-2 text-base font-medium"
+            <div className="relative">
+              {/* First-Level Dropdown */}
+              <Disclosure>
+                {navigation.map((item, key) =>
+                  item.children ? (
+                    <Disclosure key={item.name}>
+                      {({ open }) => (
+                        <div key={key} className="py-1">
+                          <DisclosureButton className="rounded-md px-3 py-2 text-sm font-medium cursor-pointer text-white bg-gray-800 hover:bg-gray-700 w-full text-left flex justify-between">
+                            {item.name}
+                            <span
+                              className={`transition-transform ${
+                                open ? "rotate-180" : "rotate-0"
+                              }`}
+                            >
+                              ▼
+                            </span>
+                          </DisclosureButton>
+                          <DisclosurePanel className="ml-4 border-l border-gray-500 pl-2 space-y-1">
+                            {item.children.map((child) => (
+                              <a
+                                key={child.name}
+                                href={child.href}
+                                className="block px-3 py-2 text-sm text-black hover:bg-gray-700 hover:text-white rounded-md"
+                              >
+                                {child.name}
+                              </a>
+                            ))}
+                          </DisclosurePanel>
+                        </div>
+                      )}
+                    </Disclosure>
+                  ) : (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="block px-3 py-2 text-sm text-white hover:bg-gray-700 hover:text-white rounded-md"
+                    >
+                      {item.name}
+                    </a>
+                  )
                 )}
-              >
-                {item.name}
-              </DisclosureButton>
-            ))}
-            <InputGroup />
+                <InputGroup />
+              </Disclosure>
+            </div>
           </div>
         </DisclosurePanel>
       </Disclosure>

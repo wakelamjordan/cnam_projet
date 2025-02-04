@@ -7,20 +7,37 @@ import {
   faSquareGithub,
   faSquareDribbble,
 } from "@fortawesome/free-brands-svg-icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
 
-const Footer = () => {
+const Footer = ({ navigation }) => {
   return (
     <footer className="bg-white py-12">
       <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav className="flex flex-wrap justify-center space-x-6">
-          {["About", "Blog", "Team", "Pricing", "Contact", "Terms"].map(
-            (item, index) => (
+        <nav className="grid grid-cols-2 gap-2 justify-items-center lg:flex flex-wrap justify-center lg:space-x-6">
+          {navigation.map((item, index) =>
+            item.children ? (
+              <ul key={index}>
+                <li className="text-gray-500">
+                  {item.name}
+                </li>
+                {item.children.map((children, key) => (
+                  <li key={key}>
+                    <Link
+                      href={children.href}
+                      className="text-gray-500 hover:text-gray-900"
+                    >
+                      {children.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
               <Link
                 key={index}
-                href="#"
+                href={item.href}
                 className="text-gray-500 hover:text-gray-900"
               >
-                {item}
+                {item.name}
               </Link>
             )
           )}
