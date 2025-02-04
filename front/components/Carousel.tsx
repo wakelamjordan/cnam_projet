@@ -38,7 +38,7 @@ export function CarouselDemo({ className = "" }) {
               //   height="300px" // Adjust height as needed
               //   width={300} // Adjust width as needed
               //   height={300} // Adjust height as needed
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded"
               //   alt={`Slide ${index + 1}`}
             />
           </CarouselItem>
