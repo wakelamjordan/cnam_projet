@@ -1,6 +1,63 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/Footer";
+
+import Image from "next/image";
+import bandeau from "../public/img/bandeau.jpg";
+import left from "../public/img/pussay_logo.png";
+import right from "../public/img/territoire-engage-nature.png";
+import Navbar from "@/components/Navbar";
+import Link from "next/link";
+
+// import Example from "@/components/test";
+
+const navigation = [
+  {
+    name: "catégorie1",
+    href: "#",
+    current: false,
+    children: [
+      { name: "article1", href: "#", current: false },
+      { name: "article2", href: "#", current: false },
+      { name: "article3", href: "#", current: false },
+      { name: "article4", href: "#", current: false },
+    ],
+  },
+  {
+    name: "catégorie2",
+    href: "#",
+    current: false,
+    children: [
+      { name: "article1", href: "#", current: false },
+      { name: "article2", href: "#", current: false },
+      { name: "article3", href: "#", current: false },
+      { name: "article4", href: "#", current: false },
+    ],
+  },
+  {
+    name: "catégorie3",
+    href: "#",
+    current: false,
+    children: [
+      { name: "article1", href: "#", current: false },
+      { name: "article2", href: "#", current: false },
+      { name: "article3", href: "#", current: false },
+      { name: "article4", href: "#", current: false },
+    ],
+  },
+  {
+    name: "catégorie4",
+    href: "#",
+    current: false,
+    children: [
+      { name: "article1", href: "#", current: false },
+      { name: "article2", href: "#", current: false },
+      { name: "article3", href: "#", current: false },
+      { name: "article4", href: "#", current: false },
+    ],
+  },
+];
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +84,27 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen md:p-8 pb-20 gap-5 font-[family-name:var(--font-geist-sans)]">
+          <div className="h-full w-full">
+            <Link href={"/"}>
+              <header className="w-full overflow-hidden grid grid-cols-6 items-center">
+                <Image src={left} alt="hhhh" className="w-auto" />
+                <Image
+                  src={bandeau}
+                  alt="hhhh"
+                  className="w-auto col-span-4 col-start-2"
+                />
+                <Image src={right} alt="hhhh" className="w-auto" />
+              </header>
+            </Link>
+            <div className="flex justify-between">
+              <Navbar navigation={navigation} />
+            </div>
+          </div>
+          {children}
+
+          <Footer navigation={navigation} />
+        </div>
       </body>
     </html>
   );

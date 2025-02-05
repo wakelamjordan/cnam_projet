@@ -7,7 +7,7 @@ import {
   faSquareGithub,
   faSquareDribbble,
 } from "@fortawesome/free-brands-svg-icons";
-import { library } from "@fortawesome/fontawesome-svg-core";
+// import { library } from "@fortawesome/fontawesome-svg-core";
 
 const Footer = ({ navigation }) => {
   return (
@@ -17,9 +17,7 @@ const Footer = ({ navigation }) => {
           {navigation.map((item, index) =>
             item.children ? (
               <ul key={index}>
-                <li className="text-gray-500">
-                  {item.name}
-                </li>
+                <li className="text-gray-500">{item.name}</li>
                 {item.children.map((children, key) => (
                   <li key={key}>
                     <Link
@@ -59,6 +57,9 @@ const Footer = ({ navigation }) => {
             </a>
           ))}
         </div>
+        <p className="text-center">
+          <Link href={"/login"}>Login</Link>
+        </p>
         <p className="mt-8 text-center text-gray-400">
           © {new Date().getFullYear()} SomeCompany, Inc. All rights reserved.
         </p>

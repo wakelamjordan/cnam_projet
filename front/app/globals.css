@@ -8,6 +8,8 @@ body {
 
 @layer base {
   :root {
+    --color--100: #ED1D26;
+    --color--100-hover: #ed1d27a8;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
