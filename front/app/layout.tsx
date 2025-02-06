@@ -23,11 +23,201 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="fr" data-theme="cupcake">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased p-0 lg:px-8 relative`}
       >
+        <header className="banner">
+          <a href="/" className="grid grid-cols-6 items-center gap-2">
+            <img className="block h-auto" src="./img/pussay_logo.png" alt="" />
+            <img
+              className="block col-span-4 rounded"
+              src="./img/bandeau.jpg"
+              alt=""
+            />
+            <img
+              className="block w-auto"
+              src="./img/territoire-engage-nature.png"
+              alt=""
+            />
+          </a>
+        </header>
+
+        <nav className="navbar bg-[var(--color-1)] col-span-6 flex items-center gap-2 rounded h-10 sticky top-[0.5rem]">
+          <a href="/" className="w-auto h-full aspect-square block p-2">
+            <img className="aspect-auto" src="./img/shell.png" alt="" />
+          </a>
+          <div className="flex-1">
+            <div className="dropdown">
+              <div
+                tabindex="0"
+                role="button"
+                className="btn btn-ghost lg:hidden"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h8m-8 6h16"
+                  />
+                </svg>
+              </div>
+
+              <ul
+                tabindex="0"
+                className="menu menu-sm dropdown-content bg-base-100 rounded-box rounded-t-none z-[1] mt-3 w-52 p-2 shadow"
+              >
+                <li>
+                  <a>Item 1</a>
+                </li>
+                <li>
+                  <a>Parent</a>
+                  <ul className="p-2">
+                    <li>
+                      <a>Submenu 1</a>
+                    </li>
+                    <li>
+                      <a>Submenu 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a>Item 3</a>
+                </li>
+                <li>
+                  <label className="input input-bordered flex items-center gap-2">
+                    <input
+                      type="text"
+                      className="w-full"
+                      placeholder="Search"
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                      className="h-4 w-4 opacity-70"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </label>
+                </li>
+              </ul>
+            </div>
+
+            <ul className="hidden menu lg:menu-horizontal px-1 text-white">
+              <li>
+                <a>Link</a>
+              </li>
+              <li>
+                <details>
+                  <summary>Parent</summary>
+                  <ul className="bg-base-100 rounded-t-none p-2 text-black">
+                    <li>
+                      <a>Link 1</a>
+                    </li>
+                    <li>
+                      <a>Link 2</a>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </div>
+          <label className="hidden input input-bordered lg:flex items-center gap-2">
+            <input type="text" className="grow" placeholder="Search" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              className="h-4 w-4 opacity-70"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </label>
+        </nav>
         {children}
+
+        <footer className="footer bg-[var(--color-1)] text-white p-10 rounded-t mt-[1em]">
+          <nav>
+            <h6 className="footer-title">Services</h6>
+            <a className="link link-hover">Branding</a>
+            <a className="link link-hover">Design</a>
+            <a className="link link-hover">Marketing</a>
+            <a className="link link-hover">Advertisement</a>
+          </nav>
+          <nav>
+            <h6 className="footer-title">Company</h6>
+            <a className="link link-hover">About us</a>
+            <a className="link link-hover">Contact</a>
+            <a className="link link-hover">Jobs</a>
+            <a className="link link-hover">Press kit</a>
+          </nav>
+          <nav>
+            <h6 className="footer-title">Legal</h6>
+            <a className="link link-hover">Terms of use</a>
+            <a className="link link-hover">Privacy policy</a>
+            <a className="link link-hover">Cookie policy</a>
+          </nav>
+        </footer>
+        <footer className="footer bg-[var(--color-1)] text-white border-base-300 border-t px-10 py-4 justify-items-center lg:justify-items-start">
+          <aside className="grid-flow-col items-center">
+            <a href="/" className="w-14 h-full aspect-square block p-2">
+              <img className="aspect-auto" src="./img/shell.png" alt="" />
+            </a>
+          </aside>
+          <nav className="md:place-self-center md:justify-self-end">
+            <div className="grid grid-flow-col gap-4">
+              <a>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="fill-current"
+                >
+                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path>
+                </svg>
+              </a>
+              <a>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="fill-current"
+                >
+                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path>
+                </svg>
+              </a>
+              <a>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  className="fill-current"
+                >
+                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path>
+                </svg>
+              </a>
+            </div>
+          </nav>
+        </footer>
       </body>
     </html>
   );

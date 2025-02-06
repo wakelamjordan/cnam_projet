@@ -8,6 +8,7 @@ body {
 
 @layer base {
   :root {
+    --color-1 : #ED1C24;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
