@@ -43,14 +43,14 @@ export default function RootLayout({
           </a>
         </header>
 
-        <nav className="navbar bg-[var(--color-1)] col-span-6 flex items-center gap-2 rounded h-10 sticky top-[0.5rem]">
+        <nav className="navbar bg-[var(--color-1)] col-span-6 flex items-center gap-2 rounded h-10 sticky top-[0.5rem] z-50">
           <a href="/" className="w-auto h-full aspect-square block p-2">
             <img className="aspect-auto" src="./img/shell.png" alt="" />
           </a>
           <div className="flex-1">
             <div className="dropdown">
               <div
-                tabindex="0"
+                tabIndex="0"
                 role="button"
                 className="btn btn-ghost lg:hidden"
               >
@@ -62,16 +62,16 @@ export default function RootLayout({
                   stroke="currentColor"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M4 6h16M4 12h8m-8 6h16"
                   />
                 </svg>
               </div>
 
               <ul
-                tabindex="0"
+                tabIndex="0"
                 className="menu menu-sm dropdown-content bg-base-100 rounded-box rounded-t-none z-[1] mt-3 w-52 p-2 shadow"
               >
                 <li>
