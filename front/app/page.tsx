@@ -29,11 +29,17 @@ function Page() {
             <img key={index} src={src} className="w-full flex-shrink-0" />
           ))}
         </div>
-        <div className="absolute left-5 right-5 top-1 lg:p-3/2 flex -translate-y-1/2 transform justify-between">
-          <button onClick={prevSlide} className="btn btn-circle">
+        <div className="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+          <button
+            onClick={prevSlide}
+            className="btn btn-circle w-8 h-8 text-xs lg:w-12 lg:h-12 lg:text-lg"
+          >
             ❮
           </button>
-          <button onClick={nextSlide} className="btn btn-circle">
+          <button
+            onClick={nextSlide}
+            className="btn btn-circle w-8 h-8 text-xs lg:w-12 lg:h-12 lg:text-lg"
+          >
             ❯
           </button>
         </div>
