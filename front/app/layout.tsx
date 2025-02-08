@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import UserMenu from "./UserMenu";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,15 +31,15 @@ export default function RootLayout({
       >
         <header className="banner">
           <a href="/" className="grid grid-cols-6 items-center gap-2">
-            <img className="block h-auto" src="./img/pussay_logo.png" alt="" />
+            <img className="block h-auto" src="/img/pussay_logo.png" alt="" />
             <img
               className="block col-span-4 rounded"
-              src="./img/bandeau.jpg"
+              src="/img/bandeau.jpg"
               alt=""
             />
             <img
               className="block w-auto"
-              src="./img/territoire-engage-nature.png"
+              src="/img/territoire-engage-nature.png"
               alt=""
             />
           </a>
@@ -45,7 +47,7 @@ export default function RootLayout({
 
         <nav className="navbar bg-[var(--color-1)] col-span-6 flex items-center gap-2 rounded h-10 sticky top-[0.5rem] z-50">
           <a href="/" className="w-auto h-full aspect-square block p-2">
-            <img className="aspect-auto" src="./img/shell.png" alt="" />
+            <img className="aspect-auto" src="/img/shell.png" alt="" />
           </a>
           <div className="flex-1">
             <div className="dropdown">
@@ -149,6 +151,7 @@ export default function RootLayout({
               />
             </svg>
           </label>
+          <UserMenu />
         </nav>
         {children}
 
@@ -173,11 +176,16 @@ export default function RootLayout({
             <a className="link link-hover">Privacy policy</a>
             <a className="link link-hover">Cookie policy</a>
           </nav>
+          <nav>
+            <h6 className="footer-title">
+              <a href="/login">espace privé</a>
+            </h6>
+          </nav>
         </footer>
         <footer className="footer bg-[var(--color-1)] text-white border-base-300 border-t px-10 py-4 justify-items-center lg:justify-items-start">
           <aside className="grid-flow-col items-center">
             <a href="/" className="w-14 h-full aspect-square block p-2">
-              <img className="aspect-auto" src="./img/shell.png" alt="" />
+              <img className="aspect-auto" src="/img/shell.png" alt="" />
             </a>
           </aside>
           <nav className="md:place-self-center md:justify-self-end">
