@@ -10,10 +10,18 @@ function page() {
   function handleSubmit(e) {
     e.preventDefault();
     if (email == "admin@gmail.com" && password == "1234") {
-
       const today = new Date(Date.now());
-      today.setHours(today.getHours()+1);
-      document.cookie = "username=admin; expires=" + today.toUTCString();
+      today.setHours(today.getHours() + 1);
+      const user = {
+        firstName: "admin",
+        lastName: "adminjr",
+        email: "admin@gmail.com",
+        birthAt: "1990-01-01",
+      };
+
+      document.cookie =
+        `user=${encodeURIComponent(JSON.stringify(user))}; expires=` +
+        today.toUTCString();
       window.location.href = "/";
     } else {
       setErrorMessage("error");
@@ -21,7 +29,7 @@ function page() {
   }
 
   return (
-    <main className="min-h-screen mt-[1rem] p-5 flex justify-center items-center flex-col">
+    <main className="mt-[1rem] flex justify-center items-center flex-col">
       <h1 className="text-2xl my-5">Formulaire de connexion</h1>
       <form className="grid gap-3" onSubmit={handleSubmit}>
         {errorMessage && (

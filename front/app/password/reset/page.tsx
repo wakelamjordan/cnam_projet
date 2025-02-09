@@ -43,7 +43,7 @@ function handleSubmitPassword(e) {
 
 if(successMessage){
       return (
-        <main className="min-h-screen mt-[1rem] p-5 flex justify-center items-center flex-col">
+        <main className="mt-[1rem] flex justify-center items-center flex-col">
           <h1 className="text-2xl my-5">
             Mot de passe réinitialisé vous pouvez dés à présent vous connecter.
           </h1>
@@ -126,7 +126,7 @@ if(successMessage){
   }
 
   return (
-    <main className="min-h-screen mt-[1rem] p-5 flex justify-center items-center flex-col">
+    <main className="mt-[1rem] flex justify-center items-center flex-col">
       <h1 className="text-2xl my-5 text-center">
         Formulaire de Réinitialisation <br /> de mot de passe
       </h1>

@@ -3,14 +3,23 @@ import { useEffect, useState } from "react";
 import GetCookie from "./_fct/GetCookie";
 
 function UserMenu() {
-  const [username, setUsername] = useState(null);
+  const [user, setUser] = useState(null);
 
-  // Check cookie when the component mounts
   useEffect(() => {
-    setUsername(GetCookie({ name: "username" }));
+    setUser(
+      JSON.parse(
+        decodeURIComponent(
+          GetCookie(
+            { name: "user" }
+          )
+        )
+      )
+    );
+    
   }, []);
+  if (!user) return null;
+  // console.log(user);
 
-  if (!username) return null; // Hide menu when user is not logged in
 
   return (
     <div className="dropdown dropdown-end">
@@ -21,7 +30,7 @@ function UserMenu() {
       >
         <div className="w-10 h-10 rounded-full bg-slate-500 capitalize relative">
           <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg font-bold">
-            {username[0]}
+            {user.lastName[0]}
           </span>
         </div>
       </div>
@@ -30,17 +39,19 @@ function UserMenu() {
         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
       >
         <li>
-          <a className="justify-between">
-            Profile
-            <span className="badge">New</span>
+          <a href="/profil" className="justify-between">
+            Profil
+            {/* <span className="badge">New</span> */}
           </a>
         </li>
         <li>
-          <a>Settings</a>
+          <a>Admin</a>
         </li>
         <li>
-          <a href="/logout" onClick={() => handleLogout(setUsername)}>
-            Logout
+          <a href="/logout" 
+          onClick={handleLogout}
+          >
+            Déconnexion
           </a>
         </li>
       </ul>
@@ -48,9 +59,9 @@ function UserMenu() {
   );
 }
 
-// Function to handle logout
+// // Function to handle logout
 const handleLogout = (setUsername) => {
-  document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 GMT"; // Delete cookie
+  document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"; // Delete cookie
   setUsername(null); // Update state to re-render component
 };
 

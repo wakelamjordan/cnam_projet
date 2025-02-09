@@ -154,7 +154,6 @@ export default function RootLayout({
           <UserMenu />
         </nav>
         {children}
-
         <footer className="footer bg-[var(--color-1)] text-white p-10 rounded-t mt-[1em]">
           <nav>
             <h6 className="footer-title">Services</h6>
