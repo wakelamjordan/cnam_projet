@@ -5,15 +5,19 @@ import GetCookie from "@/app/_fct/GetCookie";
 
 function page() {
   const [user, setUser] = useState(null);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
   useEffect(() => {
     if (GetCookie({ name: "user" })) {
       setUser(JSON.parse(decodeURIComponent(GetCookie({ name: "user" }))));
     } else {
-      return redirect("/");
+      window.location.href = "/";
     }
   }, []);
 
-
+  if (shouldRedirect) {
+    redirect("/");
+  }
   if (user === null) {
     return (
       <main className="flex justify-center items-center">

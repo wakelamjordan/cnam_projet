@@ -4,16 +4,21 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function page() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
     if (!GetCookie({ name: "user" })) {
-      redirect("/");
+      window.location.href = "/";
     }
     setUser(JSON.parse(decodeURIComponent(GetCookie({ name: "user" }))));
   }, []);
 
-  if (!user) {
+  if (shouldRedirect) {
+    redirect("/");
+  }
+
+  if (user === null) {
     return (
       <main className="flex justify-center items-center">
         <span className="loading loading-dots loading-lg"></span>

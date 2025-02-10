@@ -1,24 +1,28 @@
 "use client"; // Ensures this is a client component
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // import { useRouter } from "next/navigation";
 import GetCookie from "../_fct/GetCookie";
 import { redirect } from "next/navigation";
 
 function Page() {
   // const router = useRouter();
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   useEffect(() => {
-  const value = GetCookie({ name: "user" });
+    const value = GetCookie({ name: "user" });
 
-  if (value) {
-    document.cookie = "user= ; expires = Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-  } else {
+    if (value) {
+      document.cookie =
+        "user= ; expires = Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+    } else {
+      window.location.href = "/";
+    }
+  }, []);
+
+  if (shouldRedirect) {
     redirect("/");
   }
-
-  // router.push("/"); // Redirect after logout
-  }, []);
 
   return (
     <main>

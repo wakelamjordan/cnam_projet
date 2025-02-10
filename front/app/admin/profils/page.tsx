@@ -3,8 +3,10 @@ import { useEffect, useState, useRef } from "react";
 import { redirect } from "next/navigation";
 import GetCookie from "@/app/_fct/GetCookie";
 
-import { faX } from "@fortawesome/free-solid-svg-icons";
+import { faX, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import Link from "next/link";
 
 function page() {
   const [user, setUser] = useState(null);
@@ -67,12 +69,12 @@ function page() {
 
   function openModal(data) {
     setSelectedProfil(data);
-    modalRef.current?.showModal();
+    modalRef.current.showModal();
   }
   return (
     <main className="flex justify-center items-center">
       <div></div>
-      <div className="overflow-x-auto xl:w-2/3 max-h-screen">
+      <div className="overflow-x-auto xl:w-2/3 max-h-[60vh]">
         <table className="table table-zebra text-center">
           {/* head */}
           <thead className="sticky top-0">
@@ -86,7 +88,7 @@ function page() {
               <th className="hidden md:table-cell">Role</th>
             </tr>
           </thead>
-          <tbody className="max-h-screen overflow-hidden">
+          <tbody className="overflow-hidden">
             {profils.map((item, key) => (
               <tr key={key} onClick={() => openModal(item)}>
                 <td>{item.email}</td>
@@ -103,18 +105,15 @@ function page() {
         {/* <button className="btn" onClick={}>
           open modal
         </button> */}
-        <dialog id="my_modal_4" className="modal relative" ref={modalRef}>
-          <div className="modal-box">
-            <div className="modal-action">
+        <dialog id="my_modal_4" className="modal fixe" ref={modalRef}>
+          <div className="modal-box max-h-screen">
+            <div className="modal-action mt-0">
               {/* <form method="dialog"> */}
               {selectedProfil !== null ? (
                 // <div className="grid gap-3 lg:grid-cols-6 lg:mx-40 lg:my-20s">
-                <div className="grid">
+                <div className="grid gap-2 md:grid-cols-2">
                   {selectedProfil.newEmail && (
-                    <div
-                      role="alert"
-                      className="alert alert-info"
-                    >
+                    <div role="alert" className="alert alert-info">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -136,7 +135,7 @@ function page() {
                   )}
                   <div className="">
                     <span className="">Email :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="text"
                         className="grow"
@@ -147,7 +146,7 @@ function page() {
                   </div>
                   <div className="">
                     <span className="">Nom :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="text"
                         className="grow"
@@ -158,7 +157,7 @@ function page() {
                   </div>
                   <div className="">
                     <span className="">Prénom :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="text"
                         className="grow"
@@ -169,7 +168,7 @@ function page() {
                   </div>
                   <div className="">
                     <span className="">Date de naissance :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="date"
                         className="grow"
@@ -180,7 +179,7 @@ function page() {
                   </div>
                   <div className="">
                     <span className="">Date de création :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="date"
                         className="grow"
@@ -191,7 +190,7 @@ function page() {
                   </div>
                   <div className="">
                     <span className="">Dernière connexion :</span>
-                    <label className="">
+                    <label className="input input-bordered flex items-center gap-2">
                       <input
                         type="date"
                         className="grow"
@@ -200,17 +199,45 @@ function page() {
                       />
                     </label>
                   </div>
-                  <a
-                    className="btn text-white bg-[var(--color-1)]"
-                    href="/profil/edit"
+                  <Link
+                    className="btn text-white bg-[var(--color-1)] md:col-span-2j"
+                    href={{
+                      pathname: "/admin/profils/edit",
+                      query: {
+                        firstName: selectedProfil.firstName,
+                        lastName: selectedProfil.lastName,
+                        email: selectedProfil.email,
+                        birthAt: selectedProfil.birthAt,
+                        loginAt: selectedProfil.loginAt,
+                        createdAt: selectedProfil.createdAt,
+                        role: selectedProfil.role,
+                      },
+                    }}
                   >
                     Modifier
-                  </a>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      if (confirm("Confirmez la suppression ?")) {
+                        window.location.href = "/admin/profils";
+                      }
+                    }}
+                    className="btn btn-warning max-w-16 ms-auto"
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
                 </div>
               ) : (
                 <>pas de data</>
               )}
-              <button className="absolute right-4 top-2" onClick={()=>{modalRef.current?.close()}}><FontAwesomeIcon icon={faX} className="fa-xs"/></button>
+              <button
+                className="absolute right-4 top-2"
+                onClick={() => {
+                  modalRef.current.close();
+                }}
+              >
+                <FontAwesomeIcon icon={faX} className="fa-xs" />
+              </button>
               {/* </form> */}
             </div>
           </div>

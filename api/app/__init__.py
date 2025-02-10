@@ -1,4 +1,4 @@
-from flask import Flask  # Importation de la classe Flask pour créer l'application
+    from flask import Flask  # Importation de la classe Flask pour créer l'application
 from app.database import db_session  # Importation de la session de base de données
 from app.config import config  # Importation de la configuration de l'application
 import os  # Importation du module os pour gérer les variables d'environnement
