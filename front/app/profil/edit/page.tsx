@@ -4,12 +4,12 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function page() {
-  if (!GetCookie({ name: "user" })) {
-    redirect("/");
-  }
   const [user, setUser] = useState({});
 
   useEffect(() => {
+    if (!GetCookie({ name: "user" })) {
+      redirect("/");
+    }
     setUser(JSON.parse(decodeURIComponent(GetCookie({ name: "user" }))));
   }, []);
 

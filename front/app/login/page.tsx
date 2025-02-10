@@ -17,6 +17,9 @@ function page() {
         lastName: "adminjr",
         email: "admin@gmail.com",
         birthAt: "1990-01-01",
+        loginAt: "2025-02-10",
+        createdAt: "2025-01-10",
+        role : "admin"
       };
 
       document.cookie =

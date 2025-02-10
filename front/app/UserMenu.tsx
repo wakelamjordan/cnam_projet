@@ -45,7 +45,13 @@ function UserMenu() {
           </a>
         </li>
         <li>
-          <a>Admin</a>
+          <a href="/publications" className="justify-between">
+            Publications
+            {/* <span className="badge">New</span> */}
+          </a>
+        </li>
+        <li>
+          <a href="/admin">Administration</a>
         </li>
         <li>
           <a href="/logout" 

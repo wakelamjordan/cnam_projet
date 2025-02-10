@@ -1,6 +1,6 @@
 "use client"; // Ensures this is a client component
 
-// import { useEffect } from "react";
+import { useEffect } from "react";
 // import { useRouter } from "next/navigation";
 import GetCookie from "../_fct/GetCookie";
 import { redirect } from "next/navigation";
@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 function Page() {
   // const router = useRouter();
 
-  // useEffect(() => {
+  useEffect(() => {
   const value = GetCookie({ name: "user" });
 
   if (value) {
@@ -18,7 +18,7 @@ function Page() {
   }
 
   // router.push("/"); // Redirect after logout
-  // }, []);
+  }, []);
 
   return (
     <main>

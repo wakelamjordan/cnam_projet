@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
 
 function page() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   useEffect(() => {
     if (GetCookie({ name: "user" })) {
       setUser(JSON.parse(decodeURIComponent(GetCookie({ name: "user" }))));
@@ -13,7 +13,7 @@ function page() {
     }
   }, []);
 
-  if (!user) {
+  if (user === null) {
     return (
       <main className="flex justify-center items-center">
         <span className="loading loading-dots loading-lg"></span>
@@ -71,13 +71,13 @@ function page() {
       <div className="grid grid-cols-7 items-center lg:col-span-3">
         <span className="col-span-4">Date de création :</span>
         <label className="input input-bordered flex items-center gap-2 col-span-3">
-          <input type="date" className="grow" value={"2025-02-09"} disabled />
+          <input type="date" className="grow" value={user.createdAt} disabled />
         </label>
       </div>
       <div className="grid grid-cols-7 items-center lg:col-span-3">
         <span className="col-span-4">Dernière connexion :</span>
         <label className="input input-bordered flex items-center gap-2 col-span-3">
-          <input type="date" className="grow" value={"2025-02-09"} disabled />
+          <input type="date" className="grow" value={user.loginAt} disabled />
         </label>
       </div>
       <a
