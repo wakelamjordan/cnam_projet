@@ -26,6 +26,10 @@ function page() {
       </main>
     );
   }
-  return <main>Photos</main>;
+  return (
+    <main>
+      <h1 className="text-2xl my-2">Photos</h1>
+    </main>
+  );
 }
 export default page;

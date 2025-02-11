@@ -19,12 +19,13 @@ function page() {
         birthAt: "1990-01-01",
         loginAt: "2025-02-10",
         createdAt: "2025-01-10",
-        role : "admin"
+        role: "admin",
       };
 
       document.cookie =
         `user=${encodeURIComponent(JSON.stringify(user))}; expires=` +
-        today.toUTCString();
+        today.toUTCString() +
+        "; path=/";
       window.location.href = "/";
     } else {
       setErrorMessage("error");

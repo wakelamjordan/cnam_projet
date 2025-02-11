@@ -43,27 +43,27 @@ function Page() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const today = new Date(Date.now());
-    today.setHours(today.getHours() + 1);
-    let userNew = { ...user };
+    // const today = new Date(Date.now());
+    // today.setHours(today.getHours() + 1);
+    // let userNew = { ...user };
 
-    Object.keys(user).forEach((key) => {
-      if (handleUser[key] !== undefined && handleUser[key] !== user[key]) {
-        userNew[key] = handleUser[key];
-      }
-    });
+    // Object.keys(user).forEach((key) => {
+    //   if (handleUser[key] !== undefined && handleUser[key] !== user[key]) {
+    //     userNew[key] = handleUser[key];
+    //   }
+    // });
 
-    if (handleUser.email !== undefined && handleUser.email !== user.email) {
-      userNew.newEmail = userNew.email;
-      userNew.email = user.email;
-    }
+    // if (handleUser.email !== undefined && handleUser.email !== user.email) {
+    //   userNew.newEmail = userNew.email;
+    //   userNew.email = user.email;
+    // }
 
-    document.cookie =
-      `user=${encodeURIComponent(JSON.stringify(userNew))}; expires=` +
-      today.toUTCString() +
-      "; path=/";
+    // document.cookie =
+    //   `user=${encodeURIComponent(JSON.stringify(userNew))}; expires=` +
+    //   today.toUTCString() +
+    //   "; path=/";
 
-    router.push("/profil");
+    router.push("/admin/profils");
   }
 
   function passwordReset() {
@@ -71,9 +71,10 @@ function Page() {
       setPasswordIsReset(true);
     }
   }
-
+  window.history.replaceState(null, "", window.location.pathname);
   return (
     <main>
+      <h1 className="text-2xl my-2">Édition de profil</h1>
       {passwordIsReset && (
         <div role="alert" className="alert alert-info">
           <span>
@@ -141,6 +142,25 @@ function Page() {
               id="birthAt"
               required
             />
+          </label>
+        </div>
+        <div>
+          <span>Date de naissance :</span>
+          <label className="input input-bordered flex items-center gap-2">
+            <select name="role" id="role">
+              <option value={user.role}>{user.role}</option>
+              <option value={user.role == "admin" ? "user" : "admin"}>
+                {user.role == "admin" ? "user" : "admin"}
+              </option>
+            </select>
+            {/* <input
+              type="date"
+              className="grow text-center"
+              defaultValue={user.birthAt}
+              onChange={handleChange}
+              id="birthAt"
+              required
+            /> */}
           </label>
         </div>
         <button

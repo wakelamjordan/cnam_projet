@@ -72,8 +72,8 @@ function page() {
     modalRef.current.showModal();
   }
   return (
-    <main className="flex justify-center items-center">
-      <div></div>
+    <main className="flex justify-center items-center flex-col">
+      <h1 className="text-2xl my-2">Profils</h1>
       <div className="overflow-x-auto xl:w-2/3 max-h-[60vh]">
         <table className="table table-zebra text-center">
           {/* head */}
@@ -88,7 +88,7 @@ function page() {
               <th className="hidden md:table-cell">Role</th>
             </tr>
           </thead>
-          <tbody className="overflow-hidden">
+          <tbody className="">
             {profils.map((item, key) => (
               <tr key={key} onClick={() => openModal(item)}>
                 <td>{item.email}</td>

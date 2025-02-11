@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function Page() {
   const slides = [
@@ -17,6 +17,66 @@ function Page() {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
+
+  // ajoute les catégories aux cookies
+
+  const categories = [
+    {
+      libelle: "catégorie0",
+      url: "/categorie0",
+      children: null,
+      order: 0,
+    },
+    {
+      libelle: "catégorie1",
+      url: "/categorie1",
+      children: [
+        {
+          libelle: "Souscatégorie11",
+          url: "/sous_categorie11",
+          children: null,
+          order: 2,
+        },
+        {
+          libelle: "Souscatégorie12",
+          url: "/sous_categorie12",
+          children: null,
+          order: 1,
+        },
+      ],
+      order: 0,
+    },
+    {
+      libelle: "catégorie2",
+      url: "/categorie1",
+      children: [
+        {
+          libelle: "Souscatégorie21",
+          url: "/sous_categorie21",
+          children: null,
+          order: 2,
+        },
+        {
+          libelle: "Souscatégorie22",
+          url: "/sous_categorie22",
+          children: null,
+          order: 1,
+        },
+      ],
+      order: 0,
+    },
+  ];
+  useEffect(()=>{
+    const today = new Date(Date.now());
+    today.setHours(today.getHours() + 1);
+    document.cookie =
+      `categories=${encodeURIComponent(JSON.stringify(categories))}; expires=` +
+      today.toUTCString() +
+      "; path=/";
+  },[])
+
+
+  // fin ajoute les catégories aux cookies
 
   return (
     <main className="mt-[1rem] grid lg:grid-cols-3 lg:grid-rows-[auto_auto_auto_1fr] gap-y-2">

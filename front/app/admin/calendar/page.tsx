@@ -25,7 +25,11 @@ function page() {
       </main>
     );
   }
-  return <main>Calendrier</main>;
+  return (
+    <main>
+      <h1 className="text-2xl my-2">Calendar</h1>
+    </main>
+  );
 }
 
 export default page;
