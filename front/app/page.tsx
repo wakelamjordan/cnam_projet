@@ -14,7 +14,7 @@ import Card from "@/components/Card";
 
 const navigation = [
   {
-    name: "catégorie1",
+    name: "=mairie",
     href: "#",
     current: false,
     children: [

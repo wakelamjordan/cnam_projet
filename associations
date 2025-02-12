@@ -1,0 +1,8 @@
+function maFormation(){
+    return(
+        <div>
+            hello word
+        </div>
+    );
+}
+export default maFormation;
