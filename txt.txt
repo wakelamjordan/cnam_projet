@@ -1,6 +1,2 @@
-docker container run -ti ubuntu:18.04 bash
-apt-get update && apt-get install -y psmisc nano tree xdotool xinput ldap-utils wget bsdmainutils gcc git
-git clone https://github.com/bstocker/gameshell.git && cd gameshell
-tar -xvf GameShell.tgz
-echo "true" > ./GameShell/missions/17_bg/check.sh
-./GameShell/start.sh
+la page d'accueil peux avoir plusieurs emplacements, chaques emplacements se réfère à un élément de la page d'accueil par un id.
+chaque emplacement peux recevois un 
