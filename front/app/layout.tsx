@@ -119,7 +119,7 @@ export default function RootLayout({
 
             <ul className="hidden menu lg:menu-horizontal px-1 text-white">
               <li>
-                <a>Link</a>
+                <a href="/associations">ass</a>
               </li>
               <li>
                 <details>
