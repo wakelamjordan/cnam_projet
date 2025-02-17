@@ -1,9 +1,5 @@
-
-  
   export default function page() {
     return (
-        <div>"Associations"</div>
+        <div>Associations</div>
     )
-        
   }
-  

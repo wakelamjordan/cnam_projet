@@ -2,7 +2,8 @@
 import GetCookie from "../_fct/GetCookie";
 import { useState, useEffect } from "react";
 import { redirect } from "next/navigation";
-import { title } from "process";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 function page() {
   const [user, setUser] = useState(null);
@@ -62,6 +63,9 @@ function page() {
   ];
   return (
     <main>
+      <div className="my-2">
+        <a href="" className="btn btn-success"><FontAwesomeIcon icon={faPlus} className="text-white"/></a>
+      </div>
       <div className="overflow-x-auto max-h-[60vh]">
         <table className="table table-zebra">
           {/* head */}
