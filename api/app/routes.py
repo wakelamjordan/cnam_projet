@@ -1,6 +1,14 @@
 from . import app  # Import de l'application Flask
 from flask import jsonify  # Pour renvoyer des réponses JSON
 from app.manager.user import User  # Import du modèle User
+from app.controllers.userController import userController
+
+
+@app.route("/user/new", methods=['GET', 'POST'])
+def user_new():
+    controller = userController()
+
+    return controller.new()
 
 
 # Route pour récupérer un utilisateur par son nom
@@ -20,7 +28,8 @@ def hello_world(name):
     """
     u = User.findByName(name)  # Recherche l'utilisateur
     if u is None:
-        return jsonify({"error": "User not found"}), 404  # Erreur si aucun utilisateur n'est trouvé
+        return jsonify({"error": "User not found"
+                        }), 404  # Erreur si aucun utilisateur n'est trouvé
     return jsonify(u)  # Retourne les données de l'utilisateur en JSON
 
 
