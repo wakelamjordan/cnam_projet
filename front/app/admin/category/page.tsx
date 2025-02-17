@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { redirect } from "next/navigation";
 import GetCookie from "@/app/_fct/GetCookie";
-import { Ultra } from "next/font/google";
 
 function page() {
   const [user, setUser] = useState(null);
