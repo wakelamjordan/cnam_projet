@@ -64,7 +64,7 @@ function page() {
   return (
     <main>
       <div className="my-2">
-        <a href="" className="btn btn-success"><FontAwesomeIcon icon={faPlus} className="text-white"/></a>
+        <a href="/publications/new" className="btn btn-success"><FontAwesomeIcon icon={faPlus} className="text-white"/></a>
       </div>
       <div className="overflow-x-auto max-h-[60vh]">
         <table className="table table-zebra">
