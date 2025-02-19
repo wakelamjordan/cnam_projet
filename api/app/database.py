@@ -47,7 +47,7 @@ def init_db():
     - Ensuite, elle crée les tables dans la base de données si elles n'existent pas encore.
     """
     # Import des modèles pour enregistrer les tables dans les métadonnées
-    import app.models.user
+    from app.models import user, test
     # Création des tables dans la base de données
     Base.metadata.create_all(bind=engine)
     """

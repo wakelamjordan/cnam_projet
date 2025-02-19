@@ -11,4 +11,5 @@ class Manager:
     @staticmethod
     def insert(obj):
         db_session.add(obj)
+        db_session.flush()
         db_session.commit()

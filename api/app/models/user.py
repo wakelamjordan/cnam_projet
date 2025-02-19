@@ -20,20 +20,23 @@ class User(Base):
     # id = Column(Integer, primary_key=True)  # Colonne pour l'ID, clé primaire
     email = Column(String(50),
                    primary_key=True)  # Colonne pour l'email, doit être unique
-    firstName = Column(String(50))  # Colonne pour le nom, doit être unique
-    lastName = Column(String(50))
-    firstName = Column(String(50))
-    birthAt = Column(Date)
-    createdAt = Column(DateTime)
-    loginAt = Column(DateTime)
+    password = Column(String(50), nullable=False)
+    firstname = Column(
+        String(50), nullable=False,
+        default="non renseigné")  # Colonne pour le nom, doit être unique
+    lastname = Column(String(50), nullable=False, default="non renseigné")
+    birthat = Column(Date)
+    createdat = Column(DateTime)
+    loginat = Column(DateTime)
 
     def __init__(self,
                  email,
-                 firstName=None,
-                 lastName=None,
-                 birthAt=None,
-                 createdAt=datetime.datetime.now(),
-                 loginAt=None):
+                 firstname=None,
+                 lastname=None,
+                 birthat=None,
+                 createdat=datetime.datetime.now(),
+                 loginat=None,
+                 password=None):
         """
         Constructeur pour initialiser un objet User.
 
@@ -45,12 +48,12 @@ class User(Base):
             L'email de l'utilisateur.
         """
         self.email = email
-        self.firstName = firstName
-        self.lastName = lastName
-        self.firstName = firstName
-        self.birthAt = birthAt
-        self.createdAt = createdAt
-        self.loginAt = loginAt
+        self.firstname = firstname
+        self.lastname = lastname
+        self.birthat = birthat
+        self.createdat = createdat
+        self.loginat = loginat
+        self.password = password
 
     def __repr__(self):
         """
@@ -60,7 +63,7 @@ class User(Base):
         -------
         str : Une chaîne lisible représentant l'utilisateur.
         """
-        return f" email='{self.email}', firstName='{self.firstName}', lastName='{self.lastName}', birthAt='{self.birthAt}', createdAt='{self.createdAt}',loginAt='{self.loginAt}')>"
+        return f"<(email='{self.email}',password='{self.password}', firstName='{self.firstname}', lastName='{self.lastname}', birthAt='{self.birthat}', createdAt='{self.createdat}',loginAt='{self.loginat}')>"
 
     def to_dict(self):
         """
@@ -72,21 +75,55 @@ class User(Base):
         """
         return {
             'email': self.email,
-            'firstName': self.firstName,
-            'lastName': self.lastName,
-            'birthAt': self.birthAt,
-            'createdAt': self.createdAt,
-            'loginAt': self.loginAt
+            'password': self.password,
+            'firstName': self.firstname,
+            'lastName': self.lastname,
+            'birthAt': self.birthat,
+            'createdAt': self.createdat,
+            'loginAt': self.loginat
         }
 
-    def getBirthAt(self):
-        return self.birthAt
+    def getEmail(self):
+        return self.email
 
-    def setBirthAt(self, birthAt):
-        self.birthAt = birthAt
+    def getPassword(self):
+        return self.password
+
+    def getFirstName(self):
+        return self.firstname
+
+    def getLastName(self):
+        return self.lastname
+
+    def getBirthAt(self):
+        return self.birthat
+
+    def getCreatedAt(self):
+        return self.createdat
 
     def getLoginAt(self):
-        return self.loginAt
+        return self.loginat
+
+    def setPassword(self, password):
+        self.password = password
+
+    def setFirstName(self, firstname):
+        self.firstname = firstname
+
+    def setLastName(self, lastname):
+        self.lastname = lastname
+
+    def setBirthAt(self, birthat):
+        self.birthat = birthat
+
+    def setCreatedAt(self, createdat):
+        self.createdat = createdat
+
+    def setLoginAt(self, loginat):
+        self.loginat = loginat
+
+    # def getLoginAt(self):
+    #     return self.loginAt
 
     # def to_list(result):
     #     """

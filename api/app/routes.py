@@ -6,11 +6,12 @@ from app.controllers.userController import userController
 
 @app.route("/user/new", methods=['GET', 'POST'])
 def user_new():
-    controller = userController()
+    userController = userController()
 
     return controller.new()
 
 
+@app.route("user/")
 # Route pour récupérer un utilisateur par son nom
 @app.route("/users/<name>", methods=['GET'])
 def hello_world(name):
