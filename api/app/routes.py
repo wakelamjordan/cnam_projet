@@ -8,7 +8,7 @@ from app.controllers.userController import userController
 def user_new():
     userController = userController()
 
-    return controller.new()
+    # return controller.new()
 
 
 @app.route("user/")
