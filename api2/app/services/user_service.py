@@ -4,99 +4,109 @@ from sqlalchemy.orm import Session
 from ..errors.user_error import UserNotFoundError, UserEmailDoesExist
 
 
-def insert(entity: Entity):
+def insert(entity: Entity) -> str:
     """
     Insère un nouvel utilisateur dans la base de données.
 
-    Cette fonction prend un objet `User` en argument et l'ajoute à la base de données.
-    Si une erreur survient lors de l'ajout (par exemple, si l'email existe déjà), une exception `UserEmailDoesExist`
-    est levée et la transaction est annulée.
-
     Paramètre:
-        entity (Entity) : Un objet `User` représentant l'utilisateur à insérer dans la base de données.
+        entity (Entity) : L'utilisateur à insérer.
     
+    Retourne:
+        str : L'email de l'utilisateur inséré.
+
     Lève:
-        UserEmailDoesExist : Si l'email de l'utilisateur existe déjà dans la base de données.
+        UserEmailDoesExist : Si l'email existe déjà.
     """
     db: Session = next(get_db())
     try:
         db.add(entity)
         db.commit()
-    except Exception as e:
+        return entity.get_email()
+    except Exception:
         db.rollback()
-        raise UserEmailDoesExist({'error': 'error!'})
+        raise UserEmailDoesExist({'error': 'Email already exists!'})
     finally:
         db.close()
 
 
-def delete(entity: Entity):
+def delete(entity: Entity) -> str:
     """
-    Supprime un utilisateur de la base de données en fonction de son email.
-
-    Cette fonction cherche un utilisateur correspondant à l'email fourni, et si trouvé, le supprime de la base de données.
-    Si aucun utilisateur n'est trouvé, elle retourne `None`. Si une erreur survient, une exception `UserNotFoundError`
-    est levée.
+    Supprime un utilisateur par email.
 
     Paramètre:
-        entity (Entity) : Un objet `User` représentant l'utilisateur à supprimer.
-
+        entity (Entity) : L'utilisateur à supprimer.
+    
     Retourne:
-        str | None : L'email de l'utilisateur supprimé si trouvé, sinon `None`.
-
+        str : L'email de l'utilisateur supprimé.
+    
     Lève:
-        UserNotFoundError : Si aucun utilisateur n'est trouvé avec l'email spécifié.
+        UserNotFoundError : Si l'utilisateur n'existe pas.
     """
     db: Session = next(get_db())
     try:
         entity_find = find_by_email(entity)
-        if entity_find:
-            db.delete(entity_find)
-            db.commit()
-            return entity.get_email()
-        else:
-            return None
-    except Exception as e:
+        db.delete(entity_find)
+        db.commit()
+        return entity.get_email()
+    except UserNotFoundError:
         db.rollback()
-        raise UserNotFoundError({'error': 'error!'})
+        raise
     finally:
         db.close()
 
 
-def find_by_email(entity: Entity):
+def find_by_email(entity: Entity) -> Entity:
     """
-    Recherche un utilisateur dans la base de données en utilisant son email.
-
-    Cette fonction effectue une recherche dans la base de données en filtrant par l'email de l'utilisateur.
-    Si aucun utilisateur n'est trouvé, elle lève une exception `UserNotFoundError`.
+    Recherche un utilisateur par email.
 
     Paramètre:
-        entity (Entity) : Un objet `User` représentant l'utilisateur dont l'email doit être recherché.
-
+        entity (Entity) : L'utilisateur avec l'email à rechercher.
+    
     Retourne:
-        Entity : L'utilisateur trouvé, représenté sous forme d'objet `User`.
-
+        Entity : L'utilisateur trouvé.
+    
     Lève:
-        UserNotFoundError : Si aucun utilisateur n'est trouvé avec l'email spécifié.
+        UserNotFoundError : Si aucun utilisateur n'est trouvé.
     """
     db: Session = next(get_db())
     try:
         result = db.query(Entity).filter(
             Entity._email == entity.get_email()).first()
         if not result:
-            raise UserNotFoundError({'error': 'error!'})
+            raise UserNotFoundError({'error': 'User not found!'})
         return result
     finally:
         db.close()
 
 
-def find_all():
+def find_all() -> list:
     """
-    Récupère tous les utilisateurs dans la base de données.
-
-    Cette fonction retourne une liste contenant tous les utilisateurs présents dans la table `user`.
+    Récupère tous les utilisateurs.
 
     Retourne:
-        list : Une liste d'objets `User` représentant tous les utilisateurs.
+        list : Liste des utilisateurs.
     """
     db: Session = next(get_db())
-    return db.query(Entity).all()
+    try:
+        return db.query(Entity).all()
+    finally:
+        db.close()
+
+
+def update(entity: Entity) -> Entity:
+    """
+    Met à jour un utilisateur.
+
+    Paramètre:
+        entity (Entity) : L'utilisateur à mettre à jour.
+    
+    Retourne:
+        Entity : L'utilisateur mis à jour.
+    """
+    db: Session = next(get_db())
+    try:
+        db.merge(entity)
+        db.commit()
+        return find_by_email(entity)
+    finally:
+        db.close()
