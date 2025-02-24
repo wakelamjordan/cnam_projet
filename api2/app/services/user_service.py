@@ -2,6 +2,7 @@ from app.models import get_db
 from app.models.user_model import User as Entity
 from sqlalchemy.orm import Session
 from app.errors.user_error import UserNotFoundError, UserEmailDoesExist
+from sqlalchemy.exc import IntegrityError
 
 
 def insert(entity: Entity) -> str:
@@ -18,15 +19,41 @@ def insert(entity: Entity) -> str:
         UserEmailDoesExist : Si l'email existe déjà.
     """
     db: Session = next(get_db())
+    email: str = entity.get_email()
+
     try:
+        check_email = db.query(Entity).filter(
+            Entity._email == entity.get_email()).first()
+        if check_email != None:
+            return "existe déjà"
         db.add(entity)
         db.commit()
-        return entity.get_email()
-    except Exception:
+    except UserEmailDoesExist:
+        UserEmailDoesExist()
         db.rollback()
-        raise UserEmailDoesExist({'error': 'Email already exists!'})
     finally:
         db.close()
+
+    return email
+    # try:
+    #     # Vérifier si un utilisateur avec cet email existe déjà
+    #     # existing_user = find_by_email(entity)
+    #     existing_user = db.query(Entity).filter(
+    #         Entity._email == entity.get_email()).first()
+    #     print(existing_user)
+
+    #     if existing_user:
+    #         raise UserEmailDoesExist(
+    #             f"L'email {entity.get_email()} existe déjà.")
+    #     db.add(entity)
+    #     db.commit()
+    #     return entity.get_email()
+    # except IntegrityError:
+    #     db.rollback()
+    #     raise UserEmailDoesExist(
+    #         f"L'email {entity.get_email()} existe déjà (contrainte UNIQUE).")
+    # finally:
+    #     db.close()
 
 
 def delete(entity: Entity) -> str:
@@ -50,7 +77,7 @@ def delete(entity: Entity) -> str:
         return entity.get_email()
     except UserNotFoundError:
         db.rollback()
-        raise
+        raise UserNotFoundError()
     finally:
         db.close()
 
@@ -73,7 +100,7 @@ def find_by_email(entity: Entity) -> Entity:
         result = db.query(Entity).filter(
             Entity._email == entity.get_email()).first()
         if not result:
-            raise UserNotFoundError({'error': 'User not found!'})
+            raise UserNotFoundError
         return result
     finally:
         db.close()
@@ -103,10 +130,17 @@ def update(entity: Entity) -> Entity:
     Retourne:
         Entity : L'utilisateur mis à jour.
     """
+    # Vérifie si le mot de passe est défini, sinon ne le change pas
+    if entity.get_password() is None:
+        entity.set_password(find_by_email(entity).get_password()
+                            )  # Garde l'ancien mot de passe si non spécifié
+
     db: Session = next(get_db())
     try:
         db.merge(entity)
         db.commit()
         return find_by_email(entity)
+    except UserNotFoundError:
+        raise UserNotFoundError()
     finally:
         db.close()

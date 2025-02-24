@@ -39,6 +39,7 @@ class UserController:
         email: str = None
         if data != None:
             email = data['email']
+        # print(request.args.get("email"))
 
         # print(data)
         # return jsonify({"jhjhj": "uyuyy"}), 200
@@ -69,7 +70,7 @@ class UserController:
             """
             try:
                 # data = request.json
-                entity: Entity = Entity(email)
+                entity: Entity = Entity(request.args.get("email"))
                 entity_find = service_find_by_email(entity)
                 return jsonify(entity_find.to_dict()), 200
             except UserNotFoundError as e:
@@ -86,7 +87,8 @@ class UserController:
 
         if method in ['PUT', 'PATCH']:
             return _update()
-        elif method == 'GET' and email != None:
+        # elif method == 'GET' and email != None:
+        elif method == 'GET' and request.args.get("email"):
             return _get_one()
         else:
             return _get_all()
@@ -127,8 +129,8 @@ class UserController:
             email_insert = service_insert(
                 entity)  # Insertion en base de données
 
-        except UserEmailDoesExist as e:
-            return jsonify({"error": str(e)}), 404
+        # except UserEmailDoesExist as e:
+        #     return jsonify({"error": str(e)}), 404
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 404
 

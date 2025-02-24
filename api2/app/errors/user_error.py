@@ -1,6 +1,10 @@
 class UserNotFoundError(Exception):
     """Exception levée lorsqu'aucun utilisateur n'est trouvé."""
 
+    def __init__(self, message="User not found!"):
+        self.message = message
+        super().__init__(self.message)
+
 
 class UserEmailDoesExist(Exception):
     """Exception levée lorsqu'aucun email existe déjà"""

@@ -2,6 +2,8 @@ import pytest
 from app import create_app
 from app.models.user_model import User
 
+from urllib.parse import urlencode
+
 
 @pytest.fixture
 def client():
@@ -18,41 +20,42 @@ def headers():
     yield headers
 
 
-def test_user_new_ok(client, mocker, headers,
-                     u: User = User("test@gmail.com")):
-    # 🔹 Données à envoyer dans la requête
-    data = {"email": u.get_email()}
+def test_user_controller_index_new_ok(client, mocker, headers):
+    list_users_ok = [
+        "testss@gmail.com", "test1@gmail.com", "test2@gmail.com",
+        "test3@gmail.com"
+    ]
 
-    # ✅ Patch correctement la méthode `service_insert`
-    mocker.patch("app.controllers.user_controller.service_insert",
-                 return_value=u.get_email())
+    for email in list_users_ok:
+        u = User(email)
 
-    # # 🔹 Headers pour indiquer qu'on envoie du JSON
-    # headers = {"Content-Type": "application/json"}
+        # 🚀 Supprimer le patch pour tester réellement la base de données
+        mocker.patch("app.controllers.user_controller.service_insert",
+                     return_value=u.get_email())
 
-    # 🔹 Envoie la requête POST
-    response = client.post("/user/new", json=data, headers=headers)
+        response = client.post("/user/new",
+                               json={"email": u.get_email()},
+                               headers=headers)
 
-    # return response
+        # ✅ Vérifie le code HTTP
+        assert response.status_code == 201
 
-    # ✅ Vérifie le code HTTP
-    assert response.status_code == 201
-
-    # ✅ Vérifie la structure et la valeur de la réponse
-    assert response.json == data
+        # ✅ Vérifie la structure et la valeur de la réponse
+        assert response.json["email"] == u.get_email()
 
 
-def test_user_new_not_ok(client, mocker, headers):
+def test_user_controller_index_new_not_ok(client, mocker, headers):
     """Test insertion utilisateur avec un email invalide"""
     invalid_emails = [
-        "test@@gmail.com", "test@1@gmail.com", "user@.com", "user@com"
+        "test@@gmail.com", "test@1@gmail.com", "usercom", "user@com"
     ]
 
     for email in invalid_emails:
+        # u = User(email)
         data = {"email": email}
 
-        mocker.patch("app.controllers.user_controller.service_insert",
-                     side_effect=ValueError("Invalid email format"))
+        # mocker.patch("app.controllers.user_controller.service_insert",
+        #              side_effect=ValueError("Invalid email format"))
 
         response = client.post("/user/new", json=data, headers=headers)
 
@@ -63,7 +66,7 @@ def test_user_new_not_ok(client, mocker, headers):
         assert response.json == {"error": "Email not valid"}
 
 
-def test_user_index_get_all(client, mocker):
+def test_user_controller_index_get_all(client, mocker):
     list_users = [
         "test@gmail.com", "test1@gmail.com", "test2@gmail.com",
         "test3@gmail.com"
@@ -79,26 +82,40 @@ def test_user_index_get_all(client, mocker):
     assert len(response.json) == len(list_users)
 
 
-def test_user_index(client, mocker, headers):
+def test_user_controller_index_get_one(client, headers):
+    email = "testgmail.com"
+    params = urlencode({"email": email})
+    response = client.get('/user/?{params}')
+    # print(response)
+    assert response.json[0]["email"] == email
 
-    # 🔹 Emails valides
-    list_users_ok = [
-        "test@gmail.com", "test1@gmail.com", "test2@gmail.com",
-        "test3@gmail.com"
-    ]
 
-    # 🔹 Emails invalides
-    list_users_not_ok = [
-        "test@@gmail.com", "test@1@gmail.com", "user@com", "user@com"
-    ]
+def test_user_controller_index_update_put(client, headers):
+    response = client.put('/user/',
+                          json={
+                              "email": "test@gmail.com",
+                              "firstname": "modif put",
+                              "lastname": "modif put",
+                              "birth_at": "1990-07-28"
+                          },
+                          headers=headers)
+    assert response.json["email"] == "test@gmail.com"
+    assert response.json["firstname"] and response.json[
+        "lastname"] == "modif put"
 
-    for user in list_users_ok:
-        u = User(user)
-        test_user_new_ok(client, mocker, headers, u)
 
-    for user in list_users_not_ok:
-        data = {"email": user}
-        mocker.patch("app.controllers.user_controller.service_insert",
-                     side_effect=ValueError("Invalid email format"))
+def test_user_controller_index_update_patch(client, headers):
+    response = client.put('/user/',
+                          json={
+                              "email": "test@gmail.com",
+                              "firstname": "modif patch",
+                              "lastname": "modif patch",
+                              "birth_at": "1990-07-28"
+                          },
+                          headers=headers)
+    assert response.json["email"] == "test@gmail.com"
+    assert response.json["firstname"] and response.json[
+        "lastname"] == "modif patch"
 
-        client.post("/user/new", json=data, headers=headers)
+
+# def test_user_controller_delete(client, mocker,headers):
