@@ -1,4 +1,4 @@
-from .user_controller import user_blueprint
+from app.controllers.user_controller import user_blueprint
 
 
 def register_blueprints(app):

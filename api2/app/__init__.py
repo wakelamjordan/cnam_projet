@@ -1,7 +1,7 @@
 from flask import Flask
-from .controllers import register_blueprints
-from .models import init_db
-from .config import Config
+from app.controllers import register_blueprints
+from app.models import init_db
+from app.config import Config
 
 
 def create_app():

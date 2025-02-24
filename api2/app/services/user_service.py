@@ -1,7 +1,7 @@
-from ..models import get_db
-from ..models.user_model import User as Entity
+from app.models import get_db
+from app.models.user_model import User as Entity
 from sqlalchemy.orm import Session
-from ..errors.user_error import UserNotFoundError, UserEmailDoesExist
+from app.errors.user_error import UserNotFoundError, UserEmailDoesExist
 
 
 def insert(entity: Entity) -> str:
