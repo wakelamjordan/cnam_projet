@@ -34,10 +34,22 @@ def list_users_ok():
     """
     Fixture contenant une liste d'adresses email valides pour les tests.
     """
-    list_users_ok = [
-        "test@gmail.com", "test1@gmail.com", "test2@gmail.com",
-        "test3@gmail.com"
-    ]
+    list_users_ok = [{
+        "email": "test@gmail.com",
+        "password": "Vdqcw4TympGe3lrKbpUUrN79@"
+    }, {
+        "email": "test2@gmail.com",
+        "password": "Vdqcw4TympGe3lrKbpUUrN79@"
+    }, {
+        "email": "test3@gmail.com",
+        "password": "Vdqcw4TympGe3lrKbpUUrN79@"
+    }, {
+        "email": "test4@gmail.com",
+        "password": "Vdqcw4TympGe3lrKbpUUrN79@"
+    }, {
+        "email": "test5@gmail.com",
+        "password": "Vdqcw4TympGe3lrKbpUUrN79@"
+    }]
     yield list_users_ok
 
 
@@ -46,9 +58,22 @@ def list_user_not_ok():
     """
     Fixture contenant une liste d'adresses email invalides pour tester la validation.
     """
-    list_user_not_ok = [
-        "test@@gmail.com", "test@1@gmail.com", "usercom", "user@com"
-    ]
+    list_user_not_ok = [{
+        "email": "testgmailcom",
+        "password": "Vdqcw4TympG"
+    }, {
+        "email": "test2@@gmail.@com",
+        "password": "Vdqcw4TympG"
+    }, {
+        "email": "test3_t$js@gmail.com",
+        "password": "Vdqcw4TympG"
+    }, {
+        "email": "@test4@gmailcom",
+        "password": "Vdqcw4TympG"
+    }, {
+        "email": "tiiii@@est5@gmailcom",
+        "password": "Vdqcw4TympG"
+    }]
     yield list_user_not_ok
 
 
@@ -60,28 +85,29 @@ def test_user_controller_new(client, headers, list_users_ok, list_user_not_ok):
     - Vérifie qu'un email déjà existant retourne une erreur `400 Bad Request`.
     - Vérifie que les emails invalides sont rejetés avec un code `415 Unsupported Media Type`.
     """
-    for email in list_users_ok:
+    for user in list_users_ok:
         response = client.post("/user/new",
-                               json={"email": email},
+                               json={"email": user["email"]},
                                headers=headers)
         assert response.status_code == 201
-        assert response.json["email"] == email
+        assert response.json["email"] == user["email"]
 
         response = client.post("/user/new",
-                               json={"email": list_users_ok[0]},
+                               json={"email": list_users_ok[0]["email"]},
                                headers=headers)
         assert response.status_code == 400
-        assert response.json["error"] == f"Email {list_users_ok[0]} does exist"
+        assert response.json["error"] == f"Email {list_users_ok[0]["email"]} does exist"
 
-    for email in list_user_not_ok:
+    for user in list_user_not_ok:
         response = client.post("/user/new",
-                               json={"email": email},
+                               json={"email": user["email"]},
                                headers=headers)
+        # assert response.
         assert response.status_code == 415
         assert response.json == {"error": "Email not valid"}
 
 
-def test_user_controller_index(client, headers, list_users_ok):
+def test_user_controller_index(client, headers, list_users_ok, list_user_not_ok):
     """
     Teste la récupération, la mise à jour et la modification d'un utilisateur via l'endpoint `/user/`.
     
@@ -92,24 +118,30 @@ def test_user_controller_index(client, headers, list_users_ok):
     """
     response = client.get('/user/')
     for i in range(len(list_users_ok)):
-        assert response.json[i]["email"] == list_users_ok[i]
+        assert response.json[i]["email"] == list_users_ok[i]["email"]
 
-    params = urlencode({"email": list_users_ok[0]})
+    params = urlencode({"email": list_users_ok[0]["email"]})
     response = client.get(f'/user/?{params}')
     assert response.status_code == 200
-    assert response.json["email"] == list_users_ok[0]
+    assert response.json["email"] == list_users_ok[0]["email"]
 
     params = urlencode({"email": "inconnu@gmail.com"})
     response = client.get(f'/user/?{params}')
     assert response.status_code == 404
     assert response.json["error"] == "User not found!"
 
+    params = urlencode({"email": "test3_t$js@gmail.com"})
+    response = client.get(f'/user/?{params}')
+    assert response.status_code == 415
+    assert response.json["error"] == "Email not valid"
+
     response = client.put('/user/',
                           json={
-                              "email": list_users_ok[0],
+                              "email": list_users_ok[0]["email"],
                               "firstname": "modif put",
                               "lastname": "modif put",
-                              "birth_at": "1990-07-28"
+                              "birth_at": "1990-07-28",
+                              "password":list_users_ok[0]["password"]
                           },
                           headers=headers)
     assert response.status_code == 200
@@ -118,10 +150,11 @@ def test_user_controller_index(client, headers, list_users_ok):
 
     response = client.patch('/user/',
                             json={
-                                "email": list_users_ok[0],
+                                "email": list_users_ok[0]["email"],
                                 "firstname": "modif patch",
                                 "lastname": "modif patch",
-                                "birth_at": "1990-07-28"
+                                "birth_at": "1990-07-28",
+                                "password":list_users_ok[0]["password"]
                             },
                             headers=headers)
     assert response.status_code == 200
@@ -150,6 +183,30 @@ def test_user_controller_index(client, headers, list_users_ok):
     assert response.status_code == 404
     assert response.json["error"] == "Email emailnotfound@gmail.com not found"
 
+    response = client.put('/user/',
+                          json={
+                              "email": "emailnotfound@gmail.com",
+                              "firstname": "modif put",
+                              "lastname": "modif put",
+                              "birth_at": "1990-07-28",
+                              "password":list_user_not_ok[0]["password"]
+                          },
+                          headers=headers)
+    assert response.status_code == 415
+    assert response.json["error"] == "Password not valid"
+
+    response = client.patch('/user/',
+                            json={
+                                "email": "emailnotfound@gmail.com",
+                                "firstname": "modif patch",
+                                "lastname": "modif patch",
+                                "birth_at": "1990-07-28",
+                                "password":list_user_not_ok[0]["password"]
+                            },
+                            headers=headers)
+    assert response.status_code == 415
+    assert response.json["error"] == "Password not valid"
+
 
 def test_user_controller_delete(client, headers, list_users_ok):
     """
@@ -158,9 +215,9 @@ def test_user_controller_delete(client, headers, list_users_ok):
     - Vérifie que la suppression d'un utilisateur existant retourne un code `200 OK`.
     - Vérifie que la suppression d'un utilisateur inexistant retourne une erreur `404 Not Found`.
     """
-    for email in list_users_ok:
+    for user in list_users_ok:
         response = client.delete("/user/delete",
-                                 json={"email": email},
+                                 json={"email": user["email"]},
                                  headers=headers)
         assert response.status_code == 200
 

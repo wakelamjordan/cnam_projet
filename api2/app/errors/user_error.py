@@ -20,3 +20,10 @@ class UserEmailNotValide(Exception):
     def __init__(self, message="Email not valid"):
         self.message = message
         super().__init__(self.message)
+
+
+class UserPasswordNotValid(Exception):
+
+    def __init__(self, message="Password not valid"):
+        self.message = message
+        super().__init__(self.message)

@@ -7,7 +7,7 @@ from app.services.user_service import (insert as service_insert, delete as
                                        service_update)
 import string
 import secrets
-from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide
+from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide, UserPasswordNotValid
 from datetime import date
 from app.validators.user_validator import User_validator
 
@@ -63,12 +63,16 @@ class UserController:
                 if "birth_at" in data:
                     date_iso = date.fromisoformat(data["birth_at"])
                     entity.set_birth_at(date_iso)
+                if "password" in data:
+                    entity.set_password(data["password"])
 
                 entity_find = service_update(entity)
                 return jsonify(entity_find.to_dict()), 200
 
             except UserNotFoundError:
                 return jsonify({"error": f"Email {email} not found"}), 404
+            except UserPasswordNotValid as e:
+                return jsonify({"error": str(e)}), 415
 
         def _get_one() -> Response:
             """
@@ -82,6 +86,8 @@ class UserController:
                 entity = Entity(request.args.get("email"))
                 entity_find = service_find_by_email(entity)
                 return jsonify(entity_find.to_dict()), 200
+            except UserEmailNotValide as e:
+                return jsonify({"error": str(e)}), 415
             except UserNotFoundError as e:
                 return jsonify({"error": str(e)}), 404
 
@@ -104,7 +110,7 @@ class UserController:
         else:
             return _get_all()
 
-    @staticmethod
+    @classmethod
     @user_blueprint.route('/new', methods=['POST'])
     def _new() -> Response:
         """
@@ -125,19 +131,14 @@ class UserController:
 
             entity = Entity(email)
 
-            # Génération d'un mot de passe aléatoire sécurisé
-            character_all = string.ascii_letters + string.digits
-            password: str = ''.join(
-                secrets.choice(character_all) for _ in range(20))
-
-            entity.set_password(password)  # Définition du mot de passe
+            entity.set_password(
+                UserController._generate_psw())  # Définition du mot de passe
             email_insert = service_insert(
                 entity)  # Insertion en base de données
-
-        except UserEmailDoesExist:
-            return jsonify({"error": f"Email {email} does exist"}), 400
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 415
+        except UserEmailDoesExist:
+            return jsonify({"error": f"Email {email} does exist"}), 400
 
         return jsonify({'email': email_insert}), 201
 
@@ -162,3 +163,12 @@ class UserController:
             return jsonify({'message': 'User deleted successfully'}), 200
         except UserNotFoundError as e:
             return jsonify({"error": str(e)}), 404
+
+    def _generate_psw() -> str:
+        # Génération d'un mot de passe aléatoire sécurisé
+        character_all = string.ascii_letters + string.digits + string.punctuation
+        password: str = ''.join(
+            secrets.choice(character_all) for _ in range(20))
+        password = (secrets.choice(string.digits) for _ in range(1))
+        password = f"{password}{(secrets.choice(string.punctuation) for _ in range(1))}"
+        return password

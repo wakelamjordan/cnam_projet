@@ -105,6 +105,7 @@ class User(Base):
         Paramètres:
             password (str) : Le nouveau mot de passe.
         """
+        User_validator.validate_psw(password)
         self._password = password
 
     def get_firstname(self) -> Optional[str]:
@@ -189,5 +190,4 @@ class User(Base):
         Lève:
             UserEmailNotValide : Si l'adresse email n'est pas valide.
         """
-        validator = User_validator()
-        validator.validate_email(email)
+        User_validator.validate_email(email)

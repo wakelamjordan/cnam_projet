@@ -1,7 +1,7 @@
 from app.models import get_db
 from app.models.user_model import User as Entity
 from sqlalchemy.orm import Session
-from app.errors.user_error import UserNotFoundError, UserEmailDoesExist
+from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide
 
 
 def insert(entity: Entity) -> str:
@@ -28,6 +28,9 @@ def insert(entity: Entity) -> str:
         db.add(entity)
         db.commit()
     except UserEmailDoesExist:
+        db.rollback()
+        raise
+    except UserEmailNotValide:
         db.rollback()
         raise
     finally:
