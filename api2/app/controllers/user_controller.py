@@ -51,18 +51,22 @@ class UserController:
             - Récupère les données à modifier depuis `request.form`.
             - Met à jour uniquement les champs fournis.
             """
-            entity = Entity(email)
 
-            if data["firstname"]:
-                entity.set_firstname(data["firstname"])
-            if data["lastname"]:
-                entity.set_lastname(data["lastname"])
-            if data["birth_at"]:
-                date_iso = date.fromisoformat(data["birth_at"])
-                entity.set_birth_at(date_iso)
+            try:
+                entity = Entity(email)
 
-            entity_find = service_update(entity)
-            return jsonify(entity_find.to_dict()), 200
+                if data["firstname"]:
+                    entity.set_firstname(data["firstname"])
+                if data["lastname"]:
+                    entity.set_lastname(data["lastname"])
+                if data["birth_at"]:
+                    date_iso = date.fromisoformat(data["birth_at"])
+                    entity.set_birth_at(date_iso)
+
+                entity_find = service_update(entity)
+                return jsonify(entity_find.to_dict()), 200
+            except UserNotFoundError:
+                return jsonify({"error": f"Email {email} not found"}), 404
 
         def _get_one():
             """
@@ -129,10 +133,12 @@ class UserController:
             email_insert = service_insert(
                 entity)  # Insertion en base de données
 
+        except UserEmailDoesExist as e:
+            return jsonify({"error": f"Email {email} does exist"}), 400
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
         # except UserEmailDoesExist as e:
         #     return jsonify({"error": str(e)}), 404
-        except UserEmailNotValide as e:
-            return jsonify({"error": str(e)}), 404
 
         return jsonify({'email': email_insert}), 201
 

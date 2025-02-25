@@ -25,12 +25,13 @@ def insert(entity: Entity) -> str:
         check_email = db.query(Entity).filter(
             Entity._email == entity.get_email()).first()
         if check_email != None:
-            return "existe déjà"
+            raise UserEmailDoesExist()
         db.add(entity)
         db.commit()
+
     except UserEmailDoesExist:
-        UserEmailDoesExist()
         db.rollback()
+        raise
     finally:
         db.close()
 
@@ -131,16 +132,16 @@ def update(entity: Entity) -> Entity:
         Entity : L'utilisateur mis à jour.
     """
     # Vérifie si le mot de passe est défini, sinon ne le change pas
+    db: Session = next(get_db())
     if entity.get_password() is None:
         entity.set_password(find_by_email(entity).get_password()
                             )  # Garde l'ancien mot de passe si non spécifié
-
-    db: Session = next(get_db())
     try:
+
         db.merge(entity)
         db.commit()
         return find_by_email(entity)
     except UserNotFoundError:
-        raise UserNotFoundError()
+        raise UserNotFoundError
     finally:
         db.close()

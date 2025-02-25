@@ -9,6 +9,10 @@ class UserNotFoundError(Exception):
 class UserEmailDoesExist(Exception):
     """Exception levée lorsqu'aucun email existe déjà"""
 
+    def __init__(self, message="Email does exist"):
+        self.message = message
+        super().__init__(self.message)
+
 
 class UserEmailNotValide(Exception):
     """Exception levée quand un email n'es pas valide"""
