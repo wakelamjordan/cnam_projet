@@ -1,12 +1,14 @@
 from flask import Flask
 from app.controllers import register_blueprints
 from app.models import init_db
-from app.config import Config, Test_config
+from app.config import Config, Test_config, limiter
 import os
 
 
 def create_app():
     app = Flask(__name__)
+
+    limiter.init_app(app)
 
     if os.getenv("FLASK_ENV") == "testing":
         app.config.from_object(Test_config)

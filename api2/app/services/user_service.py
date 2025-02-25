@@ -121,6 +121,8 @@ def update(entity: Entity) -> Entity:
         entity.set_password(find_by_email(entity).get_password()
                             )  # Garde l'ancien mot de passe si non spécifié
     try:
+        if find_by_email(entity) == None:
+            raise UserNotFoundError()
         db.merge(entity)
         db.commit()
         return find_by_email(entity)

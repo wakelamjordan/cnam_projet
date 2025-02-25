@@ -10,6 +10,7 @@ import secrets
 from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide, UserPasswordNotValid
 from datetime import date
 from app.validators.user_validator import User_validator
+from werkzeug.security import generate_password_hash
 
 # Création d'un Blueprint Flask pour regrouper les routes liées aux utilisateurs
 user_blueprint = Blueprint('user', __name__)
@@ -54,6 +55,7 @@ class UserController:
                 - **404 Not Found** : Si l'utilisateur n'est pas trouvé.
             """
             try:
+                User_validator.validate_email(email)
                 entity = Entity(email)
 
                 if "firstname" in data:
@@ -64,7 +66,11 @@ class UserController:
                     date_iso = date.fromisoformat(data["birth_at"])
                     entity.set_birth_at(date_iso)
                 if "password" in data:
-                    entity.set_password(data["password"])
+                    password = data["password"]
+                    User_validator.validate_psw(password)
+                    password_hash = generate_password_hash(
+                        password, method="pbkdf2:sha256", salt_length=16)
+                    entity.set_password(password_hash)
 
                 entity_find = service_update(entity)
                 return jsonify(entity_find.to_dict()), 200
@@ -83,6 +89,7 @@ class UserController:
                 - **404 Not Found** : Si l'utilisateur n'est pas trouvé.
             """
             try:
+                User_validator.validate_email(request.args.get("email"))
                 entity = Entity(request.args.get("email"))
                 entity_find = service_find_by_email(entity)
                 return jsonify(entity_find.to_dict()), 200
@@ -128,7 +135,7 @@ class UserController:
         try:
             data: dict = request.json
             email: str = data['email']
-
+            User_validator.validate_email(email)
             entity = Entity(email)
 
             entity.set_password(
@@ -158,6 +165,7 @@ class UserController:
         """
         try:
             data = request.json
+            User_validator.validate_email(data["email"])
             entity = Entity(data["email"])
             service_delete(entity)  # Suppression de l'utilisateur
             return jsonify({'message': 'User deleted successfully'}), 200

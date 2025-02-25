@@ -185,7 +185,7 @@ def test_user_controller_index(client, headers, list_users_ok, list_user_not_ok)
 
     response = client.put('/user/',
                           json={
-                              "email": "emailnotfound@gmail.com",
+                              "email": list_users_ok[0]["email"],
                               "firstname": "modif put",
                               "lastname": "modif put",
                               "birth_at": "1990-07-28",
@@ -197,7 +197,7 @@ def test_user_controller_index(client, headers, list_users_ok, list_user_not_ok)
 
     response = client.patch('/user/',
                             json={
-                                "email": "emailnotfound@gmail.com",
+                                "email":  list_users_ok[0]["email"],
                                 "firstname": "modif patch",
                                 "lastname": "modif patch",
                                 "birth_at": "1990-07-28",

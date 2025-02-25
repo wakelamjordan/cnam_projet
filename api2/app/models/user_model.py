@@ -43,7 +43,7 @@ class User(Base):
         Paramètres:
             email (str) : L'adresse email de l'utilisateur.
         """
-        self._email_validation(email)
+        # self._email_validation(email)
         self._email = email
 
     def __repr__(self):
@@ -59,7 +59,7 @@ class User(Base):
         return (
             f'<User(email={self.get_email()}, firstname={self.get_firstname()}, '
             f'lastname={self.get_lastname()}, birth_at={self.get_birth_at()}, '
-            f'created_at={self.get_created_at()}, login_at={self.get_login_at()})>'
+            f'created_at={self.get_created_at()}, login_at={self.get_login_at()}, password={self.get_password()})>'
         )
 
     def to_dict(self):
@@ -76,6 +76,18 @@ class User(Base):
             "birth_at": self.get_birth_at(),
             "created_at": self.get_created_at(),
             "login_at": self.get_login_at()
+            # "password": self.get_password()
+        }
+
+    def to_dict_auth(self):
+        return {
+            "email": self.get_email(),
+            "firstname": self.get_firstname(),
+            "lastname": self.get_lastname(),
+            # "birth_at": self.get_birth_at(),
+            # "created_at": self.get_created_at(),
+            # "login_at": self.get_login_at(),
+            "password": self.get_password()
         }
 
     # Méthodes d'accès aux attributs privés
@@ -105,7 +117,7 @@ class User(Base):
         Paramètres:
             password (str) : Le nouveau mot de passe.
         """
-        User_validator.validate_psw(password)
+        # User_validator.validate_psw(password)
         self._password = password
 
     def get_firstname(self) -> Optional[str]:
@@ -180,14 +192,14 @@ class User(Base):
         """
         return self._login_at
 
-    def _email_validation(self, email: str):
-        """
-        Valide l'adresse email de l'utilisateur.
+    # def _email_validation(self, email: str):
+    #     """
+    #     Valide l'adresse email de l'utilisateur.
 
-        Paramètres:
-            email (str) : L'adresse email à valider.
+    #     Paramètres:
+    #         email (str) : L'adresse email à valider.
 
-        Lève:
-            UserEmailNotValide : Si l'adresse email n'est pas valide.
-        """
-        User_validator.validate_email(email)
+    #     Lève:
+    #         UserEmailNotValide : Si l'adresse email n'est pas valide.
+    #     """
+    #     User_validator.validate_email(email)
