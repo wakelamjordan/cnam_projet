@@ -3,6 +3,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import String, DateTime
 from typing import Optional
+from app.validators.user_validator import User_validator
 
 # Définir l'heure actuelle UTC pour l'initialisation des dates
 aware_datetime = datetime.now(timezone.utc)
@@ -42,6 +43,7 @@ class User(Base):
         Paramètres:
             email (str) : L'adresse email de l'utilisateur.
         """
+        self._email_validation(email)
         self._email = email
 
     def __repr__(self):
@@ -54,7 +56,11 @@ class User(Base):
         Retourne:
             str : Représentation en chaîne de l'utilisateur.
         """
-        return f'<User(email={self.get_email()}, firstname={self.get_firstname()}, lastname={self.get_lastname()}, birth_at={self.get_birth_at()}, created_at={self.get_created_at()}, login_at={self.get_login_at()})>'
+        return (
+            f'<User(email={self.get_email()}, firstname={self.get_firstname()}, '
+            f'lastname={self.get_lastname()}, birth_at={self.get_birth_at()}, '
+            f'created_at={self.get_created_at()}, login_at={self.get_login_at()})>'
+        )
 
     def to_dict(self):
         """
@@ -172,3 +178,16 @@ class User(Base):
             Optional[datetime] : La dernière date de connexion, ou None si non définie.
         """
         return self._login_at
+
+    def _email_validation(self, email: str):
+        """
+        Valide l'adresse email de l'utilisateur.
+
+        Paramètres:
+            email (str) : L'adresse email à valider.
+
+        Lève:
+            UserEmailNotValide : Si l'adresse email n'est pas valide.
+        """
+        validator = User_validator()
+        validator.validate_email(email)
