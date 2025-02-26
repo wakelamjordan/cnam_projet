@@ -1,11 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from app.services.user_service import find_by_email
 from werkzeug.security import check_password_hash
 from app.models.user_model import User
 from app.errors.security_error import LoginError
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
+from datetime import timedelta
+import jwt
 
 security_blueprint = Blueprint('security', __name__)
 
@@ -35,10 +37,14 @@ class SecurityController:
             if not check_password_hash(user_find.get_password(), password):
                 raise LoginError("Invalid email or password.")
 
-            jwt = JWT(user_find.get_email(), identity)
+            access_token = create_access_token(
+                identity=user_find.get_email(),
+                additional_claims={"firstname": user_find.get_firstname()},
+                expires_delta=timedelta(hours=1))
+
             return jsonify({
                 "message": "Login successful",
-                "token": "your_jwt_token"
+                "token": access_token
             }), 200
 
         except LoginError as e:
@@ -47,7 +53,10 @@ class SecurityController:
     @security_blueprint.route('/secure/')
     @jwt_required()
     def secure():
-        return jsonify({"message": "route sécurisée"}), 200
+        current_user = get_jwt_identity()
+        payload = get_jwt()
+        print(payload)
+        return jsonify(logged_in_as=current_user), 200
 
     @security_blueprint.errorhandler(RateLimitExceeded)
     def handle_rate_limit_error(e):

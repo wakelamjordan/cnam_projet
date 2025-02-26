@@ -11,6 +11,7 @@ from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEma
 from datetime import date
 from app.validators.user_validator import User_validator
 from werkzeug.security import generate_password_hash
+from flask_jwt_extended import jwt_required
 
 # Création d'un Blueprint Flask pour regrouper les routes liées aux utilisateurs
 user_blueprint = Blueprint('user', __name__)
@@ -28,6 +29,7 @@ class UserController:
 
     @staticmethod
     @user_blueprint.route('/', methods=['GET', 'PUT', 'PATCH'])
+    @jwt_required()
     def _index() -> Response:
         """
         Gère la récupération et la mise à jour des utilisateurs.
@@ -119,6 +121,7 @@ class UserController:
 
     @classmethod
     @user_blueprint.route('/new', methods=['POST'])
+    @jwt_required()
     def _new() -> Response:
         """
         Crée un nouvel utilisateur avec une adresse email et un mot de passe aléatoire.
@@ -151,6 +154,7 @@ class UserController:
 
     @staticmethod
     @user_blueprint.route('/delete', methods=['DELETE'])
+    @jwt_required()
     def _delete() -> Response:
         """
         Supprime un utilisateur de la base de données en fonction de son email.

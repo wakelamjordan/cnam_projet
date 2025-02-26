@@ -13,7 +13,7 @@ class Config:
     """Configuration de base"""
     SQLALCHEMY_DATABASE_URI = "sqlite:///exemple.db"
     TESTING = False
-    SECRET_KEY = 'super-secret'
+    JWT_SECRET_KEY = 'super-secret'
 
 
 class Test_config(Config):
