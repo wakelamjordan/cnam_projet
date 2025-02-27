@@ -16,7 +16,7 @@ class SecurityController:
 
     @staticmethod
     @security_blueprint.route('/login/', methods=['POST'])
-    @limiter.limit("2/minute")
+    @limiter.limit("5/minute")
     def login():
         try:
             data: dict = request.json

@@ -16,9 +16,7 @@ from werkzeug.security import generate_password_hash
 from flask_jwt_extended import jwt_required, get_jwt
 from werkzeug.exceptions import Forbidden
 
-# Création d'un Blueprint Flask pour regrouper les routes liées aux utilisateurs
 user_blueprint = Blueprint('user', __name__)
-
 
 class UserController:
 
@@ -44,8 +42,8 @@ class UserController:
             return jsonify(entity_find), 200
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 415
-        except UserNotFoundError as e:
-            return jsonify({"error": str(e)}), 404
+        except UserNotFoundError:
+            return jsonify({"error": f"Email {email} not found"}), 404
         except AccessDenied as e:
             return jsonify({"error": str(e)}), 403
 
@@ -76,6 +74,8 @@ class UserController:
             return jsonify({"error": str(e)}), 400
         except UserNotFoundError:
             return jsonify({"error": f"Email {email} not found"}), 404
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
         except UserPasswordNotValid as e:
             return jsonify({"error": str(e)}), 415
         except AccessDenied as e:
@@ -108,6 +108,8 @@ class UserController:
             return jsonify({"error": str(e)}), 415
         except AccessDenied as e:
             return jsonify({"error": str(e)}), 403
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
  
     @classmethod
     @user_blueprint.route('/new', methods=['POST'])
@@ -148,8 +150,8 @@ class UserController:
             return jsonify({"error": str(e)}), 404
         except AccessDenied as e:
             return jsonify({"error": str(e)}), 403
-        except UserNotFoundError as e:
-            return jsonify({"error": str(e)}), 404
+        except UserNotFoundError:
+            return jsonify({"error": f"Email {data["email"]} not found"}), 404
 
     def _generate_psw() -> str:
         # Génération d'un mot de passe aléatoire sécurisé

@@ -114,9 +114,10 @@ def replace(entity_dict: dict, email: str) -> dict:
         entity_dict: dict = entity_to_update.to_dict()
         db.add(entity_to_update)
         db.commit()
-        db.refresh(entity_to_update
-                   )  # Rafraîchir pour récupérer les nouvelles valeurs
-        # entity_dict: dict = entity_to_update.to_dict()
+        del entity_dict["password"]
+        del entity_dict["created_at"]
+        del entity_dict["login_at"]
+
         return entity_dict
     except UserNotFoundError:
         raise
@@ -161,8 +162,6 @@ def update(entity_dict: dict, email: str) -> Entity:
         entity_update_dict: dict = entity_to_update.to_dict()
         db.add(entity_to_update)
         db.commit()
-        db.refresh(entity_to_update
-                   )  # Rafraîchir pour récupérer les nouvelles valeurs
         del entity_update_dict["password"]
         return entity_update_dict
 
