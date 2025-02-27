@@ -1,4 +1,4 @@
-class UserNotFoundError(Exception):
+class RoleNotFoundError(Exception):
     """Exception levée lorsqu'aucun utilisateur n'est trouvé."""
 
     def __init__(self, message="User not found!"):
@@ -6,7 +6,7 @@ class UserNotFoundError(Exception):
         super().__init__(self.message)
 
 
-class UserEmailDoesExist(Exception):
+class RoleDoesExist(Exception):
     """Exception levée lorsqu'aucun email existe déjà"""
 
     def __init__(self, message="Email does exist"):
@@ -14,23 +14,9 @@ class UserEmailDoesExist(Exception):
         super().__init__(self.message)
 
 
-class UserEmailNotValide(Exception):
+class RoleNotValide(Exception):
     """Exception levée quand un email n'es pas valide"""
 
     def __init__(self, message="Email not valid"):
-        self.message = message
-        super().__init__(self.message)
-
-
-class UserPasswordNotValid(Exception):
-
-    def __init__(self, message="Password not valid"):
-        self.message = message
-        super().__init__(self.message)
-
-
-class UserDataIncomplete(Exception):
-
-    def __init__(self, message="Data incomplete"):
         self.message = message
         super().__init__(self.message)

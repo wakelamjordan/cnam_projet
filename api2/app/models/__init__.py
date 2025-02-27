@@ -47,28 +47,12 @@ def init_db():
     """
     engine = get_engine()  # Récupère le moteur de la base de données
     from .user_model import User  # Importation du modèle User pour qu'il soit enregistré dans la base
+    from .role_model import Role
     Base.metadata.create_all(
         engine)  # Crée toutes les tables des modèles SQLAlchemy
 
 
 def get_db():
-    """
-    Crée et gère une session SQLAlchemy pour interagir avec la base de données.
-
-    Cette fonction crée une session connectée à la base de données en utilisant l'engine SQLAlchemy
-    et renvoie une instance de session, qui peut être utilisée pour effectuer des requêtes ou des
-    opérations sur la base de données. Une fois les opérations terminées, la session est fermée.
-
-    Retourne :
-        session (Session) : Une instance de session SQLAlchemy pour interagir avec la base de données.
-
-    Utilisation :
-        Utilisez un gestionnaire de contexte pour garantir que la session est correctement fermée après utilisation.
-
-    Exemple d'utilisation :
-        with next(get_db()) as db:
-            db.query(User).filter_by(email=email).first()
-    """
     engine = get_engine()  # Récupère l'engine de la base de données
     Session = sessionmaker(
         bind=engine)  # Crée la classe Session liée à l'engine

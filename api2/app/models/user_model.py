@@ -1,9 +1,9 @@
 from datetime import datetime, timezone, date
 from . import Base
-from sqlalchemy.orm import mapped_column, Mapped
-from sqlalchemy import String, DateTime
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+from sqlalchemy import String, DateTime, ForeignKey
 from typing import Optional
-from app.validators.user_validator import User_validator
+from .role_model import Role
 
 # Définir l'heure actuelle UTC pour l'initialisation des dates
 aware_datetime = datetime.now(timezone.utc)
@@ -36,6 +36,11 @@ class User(Base):
                                                   default=aware_datetime)
     _login_at: Mapped[Optional[datetime]] = mapped_column("login_at")
 
+    _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
+                                                 nullable=True)
+
+    role = relationship("Role")
+
     def __init__(self, email: str):
         """
         Initialise un nouvel utilisateur avec un email.
@@ -57,7 +62,7 @@ class User(Base):
             str : Représentation en chaîne de l'utilisateur.
         """
         return (
-            f'<User(email={self.get_email()}, firstname={self.get_firstname()}, '
+            f'<User(email={self.get_email()},role={self.get_role()}, firstname={self.get_firstname()}, '
             f'lastname={self.get_lastname()}, birth_at={self.get_birth_at()}, '
             f'created_at={self.get_created_at()}, login_at={self.get_login_at()}, password={self.get_password()})>'
         )
@@ -71,17 +76,19 @@ class User(Base):
         """
         return {
             "email": self.get_email(),
+            "role": self.get_role(),
             "firstname": self.get_firstname(),
             "lastname": self.get_lastname(),
             "birth_at": self.get_birth_at(),
             "created_at": self.get_created_at(),
-            "login_at": self.get_login_at()
-            # "password": self.get_password()
+            "login_at": self.get_login_at(),
+            "password": self.get_password()
         }
 
     def to_dict_auth(self):
         return {
             "email": self.get_email(),
+            "role": self.get_role(),
             "firstname": self.get_firstname(),
             "lastname": self.get_lastname(),
             # "birth_at": self.get_birth_at(),
@@ -92,6 +99,18 @@ class User(Base):
 
     # Méthodes d'accès aux attributs privés
 
+    def get_login_at(self) -> datetime:
+        return self._login_at
+
+    def set_login_at(self) -> None:
+        self._login_at = aware_datetime
+
+    def get_role(self) -> str:
+        return self._role
+
+    def set_role(self, role: str) -> None:
+        self._role = role
+
     def get_email(self) -> str:
         """
         Retourne l'email de l'utilisateur.
@@ -100,6 +119,9 @@ class User(Base):
             str : L'adresse email de l'utilisateur.
         """
         return self._email
+
+    def set_email(self, email: str) -> None:
+        self._email = email
 
     def get_password(self) -> str:
         """
