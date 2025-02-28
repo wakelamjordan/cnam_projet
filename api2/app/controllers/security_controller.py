@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
 from app.services.security_service import login as login_service
-from app.models.user_model import User
 from app.errors.security_error import LoginError
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
@@ -13,11 +12,28 @@ security_blueprint = Blueprint('security', __name__)
 
 
 class SecurityController:
+    """
+    Contrôleur pour gérer les opérations de sécurité, notamment l'authentification des utilisateurs.
+
+    Cette classe contient des méthodes pour gérer les requêtes liées à la sécurité,
+    telles que la connexion des utilisateurs et la gestion des erreurs de limite de taux.
+    """
 
     @staticmethod
     @security_blueprint.route('/login/', methods=['POST'])
     @limiter.limit("5/minute")
     def login():
+        """
+        Gère la connexion des utilisateurs.
+
+        Cette méthode traite les requêtes POST à l'endpoint `/login/` pour authentifier les utilisateurs.
+        Elle valide les informations d'identification, génère un token JWT en cas de succès,
+        et gère les erreurs de validation et de connexion.
+
+        Returns:
+            JSON response: Réponse JSON contenant un message de succès et le token JWT,
+                           ou un message d'erreur en cas d'échec.
+        """
         try:
             data: dict = request.json
 
@@ -45,9 +61,19 @@ class SecurityController:
 
     @security_blueprint.errorhandler(RateLimitExceeded)
     def handle_rate_limit_error(e):
-        # Personnaliser le message d'erreur
+        """
+        Gère les erreurs de limite de taux.
+
+        Cette méthode est un gestionnaire d'erreurs pour les exceptions `RateLimitExceeded`.
+        Elle retourne une réponse JSON avec un message d'erreur indiquant que le taux de requêtes a été dépassé.
+
+        Args:
+            e (RateLimitExceeded): L'exception de limite de taux.
+
+        Returns:
+            JSON response: Réponse JSON contenant un message d'erreur et une description de l'exception.
+        """
         return jsonify({
             "error": "Too many requests",
-            "message":
-            str(e.description),  # Afficher la description de l'erreur
+            "message": str(e.description),
         }), 429

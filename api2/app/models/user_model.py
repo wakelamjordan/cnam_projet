@@ -3,29 +3,30 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, DateTime, ForeignKey
 from typing import Optional
-from .role_model import Role
 
-# Définir l'heure actuelle UTC pour l'initialisation des dates
 aware_datetime = datetime.now(timezone.utc)
 
 
 class User(Base):
     """
-    Modèle SQLAlchemy représentant un utilisateur dans la base de données.
+    Modèle représentant un utilisateur dans la base de données.
 
     Attributs:
-        _email (str) : L'email unique de l'utilisateur (clé primaire).
+        _email (str) : L'email de l'utilisateur, utilisé comme clé primaire.
         _password (str) : Le mot de passe de l'utilisateur.
-        _firstname (str, optional) : Le prénom de l'utilisateur.
-        _lastname (str, optional) : Le nom de famille de l'utilisateur.
-        _birth_at (date, optional) : La date de naissance de l'utilisateur.
-        _created_at (datetime) : La date de création du compte de l'utilisateur.
-        _login_at (datetime, optional) : La dernière date de connexion de l'utilisateur.
+        _firstname (Optional[str]) : Le prénom de l'utilisateur.
+        _lastname (Optional[str]) : Le nom de famille de l'utilisateur.
+        _birth_at (Optional[date]) : La date de naissance de l'utilisateur.
+        _created_at (datetime) : La date et l'heure de création de l'utilisateur.
+        _login_at (Optional[datetime]) : La date et l'heure de la dernière connexion de l'utilisateur.
+        _role (Optional[str]) : Le rôle de l'utilisateur, lié à la table des rôles.
+
+    Relations:
+        role (Relationship) : Relation avec le modèle Role.
     """
 
     __tablename__ = 'user'
 
-    # Définition des colonnes de la table
     _email: Mapped[str] = mapped_column("email", String(50), primary_key=True)
     _password: Mapped[str] = mapped_column("password", String(50))
     _firstname: Mapped[Optional[str]] = mapped_column("firstname")
@@ -46,20 +47,16 @@ class User(Base):
         Initialise un nouvel utilisateur avec un email.
 
         Paramètres:
-            email (str) : L'adresse email de l'utilisateur.
+            email (str) : L'email de l'utilisateur.
         """
-        # self._email_validation(email)
         self._email = email
 
     def __repr__(self):
         """
-        Retourne une représentation textuelle de l'objet User.
-
-        Cette représentation masque le mot de passe et affiche uniquement les
-        informations publiques de l'utilisateur.
+        Retourne une représentation sous forme de chaîne de l'objet utilisateur.
 
         Retourne:
-            str : Représentation en chaîne de l'utilisateur.
+            str : Représentation de l'utilisateur.
         """
         return (
             f'<User(email={self.get_email()},role={self.get_role()}, firstname={self.get_firstname()}, '
@@ -69,7 +66,7 @@ class User(Base):
 
     def to_dict(self):
         """
-        Convertit l'objet User en dictionnaire.
+        Convertit les informations de l'utilisateur en dictionnaire.
 
         Retourne:
             dict : Un dictionnaire contenant les informations de l'utilisateur.
@@ -86,29 +83,51 @@ class User(Base):
         }
 
     def to_dict_auth(self):
+        """
+        Convertit les informations d'authentification de l'utilisateur en dictionnaire.
+
+        Retourne:
+            dict : Un dictionnaire contenant les informations d'authentification de l'utilisateur.
+        """
         return {
             "email": self.get_email(),
             "role": self.get_role(),
             "firstname": self.get_firstname(),
             "lastname": self.get_lastname(),
-            # "birth_at": self.get_birth_at(),
-            # "created_at": self.get_created_at(),
-            # "login_at": self.get_login_at(),
             "password": self.get_password()
         }
 
-    # Méthodes d'accès aux attributs privés
+    def get_login_at(self) -> Optional[datetime]:
+        """
+        Retourne la date et l'heure de la dernière connexion de l'utilisateur.
 
-    def get_login_at(self) -> datetime:
+        Retourne:
+            Optional[datetime] : La date et l'heure de la dernière connexion.
+        """
         return self._login_at
 
     def set_login_at(self) -> None:
+        """
+        Définit la date et l'heure de la dernière connexion de l'utilisateur à l'heure actuelle.
+        """
         self._login_at = aware_datetime
 
-    def get_role(self) -> str:
+    def get_role(self) -> Optional[str]:
+        """
+        Retourne le rôle de l'utilisateur.
+
+        Retourne:
+            Optional[str] : Le rôle de l'utilisateur.
+        """
         return self._role
 
     def set_role(self, role: str) -> None:
+        """
+        Définit le rôle de l'utilisateur.
+
+        Paramètres:
+            role (str) : Le rôle à définir.
+        """
         self._role = role
 
     def get_email(self) -> str:
@@ -116,11 +135,17 @@ class User(Base):
         Retourne l'email de l'utilisateur.
 
         Retourne:
-            str : L'adresse email de l'utilisateur.
+            str : L'email de l'utilisateur.
         """
         return self._email
 
     def set_email(self, email: str) -> None:
+        """
+        Définit l'email de l'utilisateur.
+
+        Paramètres:
+            email (str) : L'email à définir.
+        """
         self._email = email
 
     def get_password(self) -> str:
@@ -134,12 +159,11 @@ class User(Base):
 
     def set_password(self, password: str) -> None:
         """
-        Modifie le mot de passe de l'utilisateur.
+        Définit le mot de passe de l'utilisateur.
 
         Paramètres:
-            password (str) : Le nouveau mot de passe.
+            password (str) : Le mot de passe à définir.
         """
-        # User_validator.validate_psw(password)
         self._password = password
 
     def get_firstname(self) -> Optional[str]:
@@ -147,16 +171,16 @@ class User(Base):
         Retourne le prénom de l'utilisateur.
 
         Retourne:
-            Optional[str] : Le prénom de l'utilisateur, ou None s'il n'est pas défini.
+            Optional[str] : Le prénom de l'utilisateur.
         """
         return self._firstname
 
     def set_firstname(self, firstname: str) -> None:
         """
-        Modifie le prénom de l'utilisateur.
+        Définit le prénom de l'utilisateur.
 
         Paramètres:
-            firstname (str) : Le nouveau prénom de l'utilisateur.
+            firstname (str) : Le prénom à définir.
         """
         self._firstname = firstname
 
@@ -165,16 +189,16 @@ class User(Base):
         Retourne le nom de famille de l'utilisateur.
 
         Retourne:
-            Optional[str] : Le nom de famille de l'utilisateur, ou None s'il n'est pas défini.
+            Optional[str] : Le nom de famille de l'utilisateur.
         """
         return self._lastname
 
     def set_lastname(self, lastname: str) -> None:
         """
-        Modifie le nom de famille de l'utilisateur.
+        Définit le nom de famille de l'utilisateur.
 
         Paramètres:
-            lastname (str) : Le nouveau nom de famille de l'utilisateur.
+            lastname (str) : Le nom de famille à définir.
         """
         self._lastname = lastname
 
@@ -183,45 +207,24 @@ class User(Base):
         Retourne la date de naissance de l'utilisateur.
 
         Retourne:
-            Optional[date] : La date de naissance de l'utilisateur, ou None si non définie.
+            Optional[date] : La date de naissance de l'utilisateur.
         """
         return self._birth_at
 
     def set_birth_at(self, birth_at: date) -> None:
         """
-        Modifie la date de naissance de l'utilisateur.
+        Définit la date de naissance de l'utilisateur.
 
         Paramètres:
-            birth_at (date) : La nouvelle date de naissance de l'utilisateur.
+            birth_at (date) : La date de naissance à définir.
         """
         self._birth_at = birth_at
 
     def get_created_at(self) -> datetime:
         """
-        Retourne la date de création du compte de l'utilisateur.
+        Retourne la date et l'heure de création de l'utilisateur.
 
         Retourne:
-            datetime : La date de création du compte.
+            datetime : La date et l'heure de création de l'utilisateur.
         """
         return self._created_at
-
-    def get_login_at(self) -> Optional[datetime]:
-        """
-        Retourne la dernière date de connexion de l'utilisateur.
-
-        Retourne:
-            Optional[datetime] : La dernière date de connexion, ou None si non définie.
-        """
-        return self._login_at
-
-    # def _email_validation(self, email: str):
-    #     """
-    #     Valide l'adresse email de l'utilisateur.
-
-    #     Paramètres:
-    #         email (str) : L'adresse email à valider.
-
-    #     Lève:
-    #         UserEmailNotValide : Si l'adresse email n'est pas valide.
-    #     """
-    #     User_validator.validate_email(email)

@@ -1,5 +1,13 @@
 class UserNotFoundError(Exception):
-    """Exception levée lorsqu'aucun utilisateur n'est trouvé."""
+    """
+    Exception levée lorsqu'aucun utilisateur n'est trouvé.
+
+    Cette exception est levée lorsque l'application tente de récupérer un utilisateur
+    qui n'existe pas dans la base de données.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
     def __init__(self, message="User not found!"):
         self.message = message
@@ -7,7 +15,15 @@ class UserNotFoundError(Exception):
 
 
 class UserEmailDoesExist(Exception):
-    """Exception levée lorsqu'aucun email existe déjà"""
+    """
+    Exception levée lorsqu'un email existe déjà.
+
+    Cette exception est levée lorsque l'application tente de créer un utilisateur
+    avec un email qui est déjà enregistré dans la base de données.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
     def __init__(self, message="Email does exist"):
         self.message = message
@@ -15,7 +31,15 @@ class UserEmailDoesExist(Exception):
 
 
 class UserEmailNotValide(Exception):
-    """Exception levée quand un email n'es pas valide"""
+    """
+    Exception levée lorsqu'un email n'est pas valide.
+
+    Cette exception est levée lorsque l'application tente de valider un email
+    qui ne respecte pas le format attendu.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
     def __init__(self, message="Email not valid"):
         self.message = message
@@ -23,6 +47,15 @@ class UserEmailNotValide(Exception):
 
 
 class UserPasswordNotValid(Exception):
+    """
+    Exception levée lorsqu'un mot de passe n'est pas valide.
+
+    Cette exception est levée lorsque l'application tente de valider un mot de passe
+    qui ne respecte pas les critères de sécurité définis.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
     def __init__(self, message="Password not valid"):
         self.message = message
@@ -30,6 +63,15 @@ class UserPasswordNotValid(Exception):
 
 
 class UserDataIncomplete(Exception):
+    """
+    Exception levée lorsque les données utilisateur sont incomplètes.
+
+    Cette exception est levée lorsque l'application tente de traiter des données utilisateur
+    qui ne contiennent pas toutes les informations requises.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
     def __init__(self, message="Data incomplete"):
         self.message = message

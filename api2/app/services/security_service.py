@@ -1,12 +1,24 @@
 from app.models import get_db
 from app.models.user_model import User as Entity
-from sqlalchemy.orm import Session, object_session
 from app.errors.user_error import UserNotFoundError
 from app.errors.security_error import LoginError
 from werkzeug.security import check_password_hash
 
 
 def login(entity_login: dict) -> dict:
+    """
+    Authentifie un utilisateur en vérifiant ses informations d'identification.
+
+    Paramètres:
+        entity_login (dict) : Dictionnaire contenant l'email et le mot de passe de l'utilisateur.
+
+    Retourne:
+        dict : Un dictionnaire contenant les informations de l'utilisateur authentifié (email, prénom, rôle).
+
+    Lève:
+        LoginError : Si l'email ou le mot de passe est invalide.
+        UserNotFoundError : Si l'utilisateur n'est pas trouvé.
+    """
     db: Session = next(get_db())
     try:
         entity: Entity = db.query(Entity).filter(
@@ -15,7 +27,6 @@ def login(entity_login: dict) -> dict:
         if not entity:
             raise LoginError("Invalid email or password.")
 
-        # Vérification du mot de passe hashé
         if not check_password_hash(entity.get_password(),
                                    entity_login["password"]):
             raise LoginError("Invalid email or password.")

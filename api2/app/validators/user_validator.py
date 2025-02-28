@@ -6,8 +6,8 @@ class User_validator:
     """
     Classe utilitaire pour valider les informations des utilisateurs.
 
-    Attributs:
-        _regex (re.Pattern) : Expression régulière utilisée pour valider les adresses email.
+    Cette classe fournit des méthodes statiques pour valider les adresses email
+    et les mots de passe des utilisateurs selon des critères spécifiques.
     """
 
     @staticmethod
@@ -27,7 +27,23 @@ class User_validator:
             raise UserEmailNotValide()
 
     @staticmethod
-    def validate_psw(psw: str):
+    def validate_psw(psw: str) -> None:
+        """
+        Valide un mot de passe.
+
+        Paramètres:
+            psw (str) : Le mot de passe à valider.
+
+        Lève:
+            UserPasswordNotValid : Si le mot de passe n'est pas valide.
+
+        Le mot de passe doit contenir au moins :
+        - 12 caractères
+        - Une lettre majuscule
+        - Une lettre minuscule
+        - Un chiffre
+        - Un caractère spécial
+        """
         _regex_psw: re.Pattern = re.compile(
             r"^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!\"#$%&'()*+,-.\/:;<=>?@[\]^_{}|~`]).{12,}$"
         )
