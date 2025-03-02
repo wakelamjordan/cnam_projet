@@ -38,7 +38,7 @@ def insert(entity_dict: dict) -> str:
     finally:
         db.close()
 
-    return entity_dict["email"]
+    return entity_dict
 
 
 def delete(entity_dict: dict) -> str:
