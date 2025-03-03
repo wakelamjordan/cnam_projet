@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, Response, current_app,render_template, url_for
+from flask import Blueprint, jsonify, request, Response
 from app.services.user_service import (insert as service_insert, delete as
                                        service_delete, find_by_email as
                                        service_find_by_email, find_all as
@@ -12,10 +12,7 @@ from app.errors.security_error import AccessDenied
 from datetime import date
 from app.validators.user_validator import User_validator
 from werkzeug.security import generate_password_hash
-from flask_jwt_extended import jwt_required, get_jwt, create_access_token
-from flask_mail import Message, Mail
-from datetime import timedelta
-from urllib import parse
+from flask_jwt_extended import jwt_required, get_jwt
 
 user_blueprint = Blueprint('user', __name__)
 
@@ -188,21 +185,8 @@ class UserController:
             data: dict = request.json
             User_validator.validate_email(data["email"])
             data["password"] = UserController._generate_psw()
-            data_insert = service_insert(data)
-
-            # ----------------------------------
-            token = create_access_token(data_insert["email"], expires_delta=timedelta(minutes=30))
-            url = url_for('security.validation', _external=True, token = token)
-            mail:Mail = current_app.extensions['mail']
-            msg = Message(subject='validation',
-                        sender=current_app.config['MAIL_DEFAULT_SENDER'],
-                        recipients=[data_insert["email"]])
-            msg.html = render_template("email/validation.html", confirmation_link=url)
-            mail.send(msg)
-
-            # ----------------------------------
-
-            return jsonify({'email': data_insert["email"]}), 201
+            email_insert = service_insert(data)
+            return jsonify({'email': email_insert}), 201
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 415
         except UserEmailDoesExist:
@@ -276,11 +260,3 @@ class UserController:
         if payload.get("role") != "ROLE_ADMIN":
             raise AccessDenied()
         return True
-
-    # def mail(subject:str, recipients:list, template:str):
-    #     mail:Mail = current_app.extensions['mail']
-    #     msg = Message(subject=subject,
-    #                 sender=current_app.config['MAIL_DEFAULT_SENDER'],
-    #                 recipients=recipients,
-    #                 html=template)
-    #     mail.send(msg)

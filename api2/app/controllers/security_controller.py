@@ -3,7 +3,7 @@ from app.services.security_service import login as login_service
 from app.errors.security_error import LoginError
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
-from flask_jwt_extended import create_access_token, decode_token
+from flask_jwt_extended import create_access_token
 from datetime import timedelta
 from app.validators.user_validator import User_validator
 from app.errors.user_error import UserEmailNotValide
@@ -58,26 +58,6 @@ class SecurityController:
             return jsonify({"error": str(e)}), 415
         except LoginError as e:
             return jsonify({"error": str(e)}), 401
-
-    @staticmethod
-    @security_blueprint.route('/validation/<string:token>', methods=['GET'])
-    def validation(token: str):
-        decode = decode_token(token)
-        # vérification si email
-        # vérification en bdd
-        # si trouvé envoi donné user
-        # avec un token
-        return jsonify({"validé": "decode"}), 200
-        # le front génére le formulaire qui permetra de compléter les informations
-
-    @staticmethod
-    @security_blueprint.route('/inscription/', methods=['POST'])
-    def inscription(token: str):
-        decode = decode_token(token)
-        # token à vérifier
-        # reçoit en body les info du user maj
-        # maj
-        return jsonify({"validé": "decode"}), 200
 
     @security_blueprint.errorhandler(RateLimitExceeded)
     def handle_rate_limit_error(e):
