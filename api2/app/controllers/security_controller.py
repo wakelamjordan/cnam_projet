@@ -3,10 +3,13 @@ from app.services.security_service import login as login_service
 from app.errors.security_error import LoginError
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, decode_token
 from datetime import timedelta
 from app.validators.user_validator import User_validator
 from app.errors.user_error import UserEmailNotValide
+from app.services.user_service import update
+from datetime import date
+from app.controllers.user_controller import generate_password_hash
 
 security_blueprint = Blueprint('security', __name__)
 
@@ -20,7 +23,7 @@ class SecurityController:
     """
 
     @staticmethod
-    @security_blueprint.route('/login/', methods=['POST'])
+    @security_blueprint.route('/login', methods=['POST'])
     @limiter.limit("5/minute")
     def login():
         """
@@ -58,6 +61,60 @@ class SecurityController:
             return jsonify({"error": str(e)}), 415
         except LoginError as e:
             return jsonify({"error": str(e)}), 401
+
+    @staticmethod
+    @security_blueprint.route('/inscription_complete/<string:token>',
+                              methods=['GET'])
+    @limiter.limit("5/minute")
+    def inscription_complete(token: str):
+        try:
+            # data: dict = request.json
+
+            # if not data["email"] or not data["password"]:
+            #     raise LoginError("Email and password are required.")
+            # User_validator.validate_email(data["email"])
+            # test = login_service(data)
+            payload: dict = decode_token(token)
+
+            token_to_inscription_complete_post = create_access_token(
+                payload['sub'],
+                additional_claims={"type": "inscription_complete"},
+                expires_delta=timedelta(minut=30))
+
+            return jsonify({
+                "message": "Validation ok, you can complete your information.",
+                "token": token_to_inscription_complete_post
+            }), 200
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
+
+    @staticmethod
+    @security_blueprint.route('/inscription_complete', methods=['PATCH'])
+    @limiter.limit("5/minute")
+    def inscription_complete_patch():
+        try:
+            data: dict = request.json
+
+            # if not data["email"] or not data["password"]:
+            #     raise LoginError("Email and password are required.")
+            # User_validator.validate_email(data["email"])
+            # test = login_service(data)
+            payload: dict = decode_token(data['token'])
+
+            date_iso = date.fromisoformat(data["birth_at"])
+            data["birth_at"] = date_iso
+
+            password = data["password"]
+            User_validator.validate_psw(password)
+            password_hash = generate_password_hash(password,
+                                                   method="pbkdf2:sha256",
+                                                   salt_length=16)
+
+            data["password"] = password_hash
+
+            return jsonify({"email": update(data, payload['sub'])}), 200
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
 
     @security_blueprint.errorhandler(RateLimitExceeded)
     def handle_rate_limit_error(e):

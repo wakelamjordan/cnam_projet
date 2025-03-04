@@ -26,7 +26,7 @@ class UserController:
     """
 
     @staticmethod
-    @user_blueprint.route('/', methods=['GET'])
+    @user_blueprint.route('', methods=['GET'])
     @jwt_required()
     def _get_all() -> Response:
         """

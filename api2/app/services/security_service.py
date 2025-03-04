@@ -1,4 +1,4 @@
-from flask import current_app, render_template
+from flask import current_app, render_template, url_for
 from app.models import get_db
 from app.models.user_model import User as Entity
 from app.errors.user_error import UserNotFoundError
@@ -9,7 +9,8 @@ from app.models import get_db
 from app.errors.user_error import UserEmailNotValide, UserEmailDoesExist
 from app.models.user_model import User as Entity
 from flask_mail import Message, Mail
-from datetime import datetime
+from datetime import datetime, timedelta
+from flask_jwt_extended import create_access_token
 
 
 def login(entity_login: dict) -> dict:
@@ -79,11 +80,15 @@ def insert(entity_dict: dict) -> str:
         entity: Entity = Entity(entity_dict["email"])
         entity.set_password(entity_dict["password"])
         db.add(entity)
+
+        link: str = make_link('security.inscription_complete',
+                              entity_dict["email"])
         template_email: str = render_template(
             "mail/validation.html",
             user_name=entity_dict["email"],
-            confirmation_url="kjkjk",
+            confirmation_url=link,
             current_year=datetime.today().year)
+
         send_verification("Inscription-mairie", [entity_dict["email"]],
                           template_email)
         db.commit()
@@ -108,4 +113,10 @@ def send_verification(subject: str, recipients: list, template: str) -> None:
     mail.send(msg)
 
 
-# def make_link():
+def make_link(route: str, email: str) -> str:
+    token: str = create_access_token(
+        identity=email,
+        expires_delta=timedelta(hours=24),
+        additional_claims={"type": "email_verification"})
+    route = url_for(route, token=token, _external=True)
+    return route
