@@ -29,6 +29,8 @@ def insert(entity_dict: dict) -> str:
         entity.set_password(entity_dict["password"])
         db.add(entity)
         db.commit()
+
+        return entity_dict["email"]
     except UserEmailDoesExist:
         db.rollback()
         raise
@@ -37,8 +39,6 @@ def insert(entity_dict: dict) -> str:
         raise
     finally:
         db.close()
-
-    return entity_dict["email"]
 
 
 def delete(entity_dict: dict) -> str:
