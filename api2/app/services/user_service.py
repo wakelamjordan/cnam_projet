@@ -6,17 +6,17 @@ from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEma
 
 def insert(entity_dict: dict) -> str:
     """
-    Insère un nouvel utilisateur dans la base de données.
+    Inserts a new user into the database.
 
-    Paramètres:
-        entity_dict (dict) : Dictionnaire contenant les informations de l'utilisateur à insérer.
+    Parameters:
+        entity_dict (dict): A dictionary containing the user's information to be inserted.
 
-    Retourne:
-        str : L'email de l'utilisateur inséré.
+    Returns:
+        str: The email of the newly inserted user.
 
-    Lève:
-        UserEmailDoesExist : Si l'email existe déjà.
-        UserEmailNotValide : Si l'email n'est pas valide.
+    Raises:
+        UserEmailDoesExist: If the email already exists.
+        UserEmailNotValide: If the email is invalid.
     """
     db: Session = next(get_db())
 
@@ -43,16 +43,16 @@ def insert(entity_dict: dict) -> str:
 
 def delete(entity_dict: dict) -> str:
     """
-    Supprime un utilisateur de la base de données en fonction de son email.
+    Deletes a user from the database based on their email.
 
-    Paramètres:
-        entity_dict (dict) : Dictionnaire contenant l'email de l'utilisateur à supprimer.
+    Parameters:
+        entity_dict (dict): A dictionary containing the email of the user to be deleted.
 
-    Retourne:
-        str : L'email de l'utilisateur supprimé.
+    Returns:
+        str: The email of the deleted user.
 
-    Lève:
-        UserNotFoundError : Si l'utilisateur n'est pas trouvé.
+    Raises:
+        UserNotFoundError: If the user is not found.
     """
     db: Session = next(get_db())
     try:
@@ -72,16 +72,16 @@ def delete(entity_dict: dict) -> str:
 
 def find_by_email(entity_dict: dict) -> dict:
     """
-    Trouve un utilisateur dans la base de données en fonction de son email.
+    Finds a user in the database based on their email.
 
-    Paramètres:
-        entity_dict (dict) : Dictionnaire contenant l'email de l'utilisateur à rechercher.
+    Parameters:
+        entity_dict (dict): A dictionary containing the email of the user to search for.
 
-    Retourne:
-        dict : Les informations de l'utilisateur trouvé, sans le mot de passe.
+    Returns:
+        dict: The user's information, excluding the password.
 
-    Lève:
-        UserNotFoundError : Si l'utilisateur n'est pas trouvé.
+    Raises:
+        UserNotFoundError: If the user is not found.
     """
     db: Session = next(get_db())
     try:
@@ -99,13 +99,13 @@ def find_by_email(entity_dict: dict) -> dict:
 
 def find_all() -> list:
     """
-    Récupère tous les utilisateurs de la base de données.
+    Retrieves all users from the database.
 
-    Retourne:
-        list : Une liste de dictionnaires contenant les informations des utilisateurs, sans les mots de passe.
+    Returns:
+        list: A list of dictionaries containing the users' information, excluding the passwords.
 
-    Lève:
-        Exception : En cas d'erreur lors de la récupération des utilisateurs.
+    Raises:
+        Exception: If an error occurs while retrieving the users.
     """
     db: Session = next(get_db())
     try:
@@ -123,17 +123,17 @@ def find_all() -> list:
 
 def replace(entity_dict: dict, email: str) -> dict:
     """
-    Remplace les informations d'un utilisateur existant dans la base de données.
+    Replaces the information of an existing user in the database.
 
-    Paramètres:
-        entity_dict (dict) : Dictionnaire contenant les nouvelles informations de l'utilisateur.
-        email (str) : L'email de l'utilisateur à mettre à jour.
+    Parameters:
+        entity_dict (dict): A dictionary containing the new information of the user.
+        email (str): The email of the user to be updated.
 
-    Retourne:
-        dict : Les nouvelles informations de l'utilisateur, sans le mot de passe et certaines autres informations sensibles.
+    Returns:
+        dict: The updated user information, excluding the password and certain sensitive information.
 
-    Lève:
-        UserNotFoundError : Si l'utilisateur n'est pas trouvé.
+    Raises:
+        UserNotFoundError: If the user is not found.
     """
     db: Session = next(get_db())
     try:
@@ -142,7 +142,7 @@ def replace(entity_dict: dict, email: str) -> dict:
         if entity_to_update is None:
             raise UserNotFoundError()
 
-        # Mise à jour des champs si fournis
+        # Update fields if provided
         entity_to_update.set_email(entity_dict["email"])
         entity_to_update.set_role(entity_dict["role"])
         entity_to_update.set_password(entity_dict["password"])
@@ -150,7 +150,7 @@ def replace(entity_dict: dict, email: str) -> dict:
         entity_to_update.set_firstname(entity_dict["firstname"])
         entity_to_update.set_birth_at(entity_dict["birth_at"])
 
-        # Appliquer les modifications
+        # Apply changes
         entity_dict: dict = entity_to_update.to_dict()
         db.add(entity_to_update)
         db.commit()
@@ -167,17 +167,17 @@ def replace(entity_dict: dict, email: str) -> dict:
 
 def update(entity_dict: dict, email: str) -> dict:
     """
-    Met à jour les informations d'un utilisateur existant dans la base de données.
+    Updates the information of an existing user in the database.
 
-    Paramètres:
-        entity_dict (dict) : Dictionnaire contenant les informations à mettre à jour.
-        email (str) : L'email de l'utilisateur à mettre à jour.
+    Parameters:
+        entity_dict (dict): A dictionary containing the information to be updated.
+        email (str): The email of the user to be updated.
 
-    Retourne:
-        dict : Les informations mises à jour de l'utilisateur, sans le mot de passe.
+    Returns:
+        dict: The updated user information, excluding the password.
 
-    Lève:
-        UserNotFoundError : Si l'utilisateur n'est pas trouvé.
+    Raises:
+        UserNotFoundError: If the user is not found.
     """
     db: Session = next(get_db())
     try:
@@ -186,7 +186,7 @@ def update(entity_dict: dict, email: str) -> dict:
         if entity_to_update is None:
             raise UserNotFoundError()
 
-        # Mise à jour des champs si fournis
+        # Update fields if provided
         if "email" in entity_dict and entity_dict[
                 "email"] != entity_to_update.get_email():
             entity_to_update.set_email(entity_dict["email"])
@@ -211,7 +211,7 @@ def update(entity_dict: dict, email: str) -> dict:
                 "birth_at"] != entity_to_update.get_birth_at():
             entity_to_update.set_birth_at(entity_dict["birth_at"])
 
-        # Appliquer les modifications
+        # Apply changes
         entity_update_dict: dict = entity_to_update.to_dict()
         db.add(entity_to_update)
         db.commit()

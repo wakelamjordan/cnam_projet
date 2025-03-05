@@ -1,25 +1,24 @@
 from flask import Blueprint, request, jsonify
-from app.services.security_service import login as login_service
-from app.errors.security_error import LoginError
+from app.services.security_service import login as login_service, password_reset as reset_service, token_check, token_insert
+from app.errors.security_error import LoginError, TokenAlreadyUsed
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
 from flask_jwt_extended import create_access_token, decode_token
-from datetime import timedelta
+from datetime import timedelta, date
 from app.validators.user_validator import User_validator
 from app.errors.user_error import UserEmailNotValide
 from app.services.user_service import update
-from datetime import date
 from app.controllers.user_controller import generate_password_hash
+from app.errors.user_error import UserNotFoundError, UserPasswordNotValid
 
 security_blueprint = Blueprint('security', __name__)
 
 
 class SecurityController:
     """
-    Contrôleur pour gérer les opérations de sécurité, notamment l'authentification des utilisateurs.
-
-    Cette classe contient des méthodes pour gérer les requêtes liées à la sécurité,
-    telles que la connexion des utilisateurs et la gestion des erreurs de limite de taux.
+    Controller for managing user security operations.
+    
+    This controller handles user authentication, registration, token management, and password reset operations.
     """
 
     @staticmethod
@@ -27,29 +26,26 @@ class SecurityController:
     @limiter.limit("5/minute")
     def login():
         """
-        Gère la connexion des utilisateurs.
-
-        Cette méthode traite les requêtes POST à l'endpoint `/login/` pour authentifier les utilisateurs.
-        Elle valide les informations d'identification, génère un token JWT en cas de succès,
-        et gère les erreurs de validation et de connexion.
-
+        Authenticates a user and generates a JWT token.
+        
+        Extracts login information from the JSON request, validates the email and password,
+        and generates a JWT token if successful.
+        
         Returns:
-            JSON response: Réponse JSON contenant un message de succès et le token JWT,
-                           ou un message d'erreur en cas d'échec.
+            JSON: Response containing the JWT token or an error message.
         """
         try:
             data: dict = request.json
-
             if not data["email"] or not data["password"]:
                 raise LoginError("Email and password are required.")
             User_validator.validate_email(data["email"])
-            test = login_service(data)
+            user = login_service(data)
 
             access_token = create_access_token(
-                identity=test["email"],
+                identity=user["email"],
                 additional_claims={
-                    "firstname": test["firstname"],
-                    "role": test["role"]
+                    "firstname": user["firstname"],
+                    "role": user["role"]
                 },
                 expires_delta=timedelta(hours=1))
 
@@ -67,25 +63,28 @@ class SecurityController:
                               methods=['GET'])
     @limiter.limit("5/minute")
     def inscription_complete(token: str):
+        """
+        Validates a registration token and generates a temporary token to complete the registration.
+        
+        Args:
+            token (str): Confirmation token received via email.
+        
+        Returns:
+            JSON: Success message with a new token, or an error message if the token is invalid.
+        """
         try:
-            # data: dict = request.json
-
-            # if not data["email"] or not data["password"]:
-            #     raise LoginError("Email and password are required.")
-            # User_validator.validate_email(data["email"])
-            # test = login_service(data)
+            token_check(token)
             payload: dict = decode_token(token)
-
-            token_to_inscription_complete_post = create_access_token(
+            token_new = create_access_token(
                 payload['sub'],
                 additional_claims={"type": "inscription_complete"},
-                expires_delta=timedelta(minut=30))
-
+                expires_delta=timedelta(minutes=30))
+            token_insert(token_new)
             return jsonify({
                 "message": "Validation ok, you can complete your information.",
-                "token": token_to_inscription_complete_post
+                "token": token_new
             }), 200
-        except UserEmailNotValide as e:
+        except (UserEmailNotValide, TokenAlreadyUsed) as e:
             return jsonify({"error": str(e)}), 415
 
     @staticmethod
@@ -94,43 +93,109 @@ class SecurityController:
     def inscription_complete_patch():
         try:
             data: dict = request.json
+            token_check(data["token"])
+            payload: dict = decode_token(data["token"])
 
-            # if not data["email"] or not data["password"]:
-            #     raise LoginError("Email and password are required.")
-            # User_validator.validate_email(data["email"])
-            # test = login_service(data)
-            payload: dict = decode_token(data['token'])
-
+            User_validator.validate_psw(data["password"])
+            data["password"] = generate_password_hash(data["password"],
+                                                      method="pbkdf2:sha256",
+                                                      salt_length=16)
             date_iso = date.fromisoformat(data["birth_at"])
             data["birth_at"] = date_iso
+            updated_user = update(data, payload['sub'])
+            return jsonify({"email": updated_user["email"]}), 200
+        except (UserEmailNotValide, TokenAlreadyUsed) as e:
+            return jsonify({"error": str(e)}), 415
+        except UserPasswordNotValid as e:
+            return jsonify({"error": str(e)}), 415
 
-            password = data["password"]
-            User_validator.validate_psw(password)
-            password_hash = generate_password_hash(password,
-                                                   method="pbkdf2:sha256",
-                                                   salt_length=16)
+    @staticmethod
+    @security_blueprint.route('/reset_request/<string:email>', methods=["GET"])
+    @limiter.limit("5/minute")
+    def password_reset_request(email: str):
+        """
+        Generates a password reset request.
+        
+        Args:
+            email (str): The user's email address.
+        
+        Returns:
+            JSON: Message indicating whether an email has been sent.
+        """
+        try:
+            reset_service({"email": email})
+        except UserNotFoundError:
+            pass  # We do not want to reveal whether the email exists or not
+        return jsonify({
+            "message":
+            f"If account {email} exist, you will receive a reset email."
+        }), 200
 
-            data["password"] = password_hash
+    @staticmethod
+    @security_blueprint.route('/reset/<string:token>', methods=["GET"])
+    @limiter.limit("5/minute")
+    def password_reset(token: str):
+        """
+        Verifies a password reset token and generates a new temporary token.
+        
+        Args:
+            token (str): Password reset token sent via email.
+        
+        Returns:
+            JSON: New temporary token to change the password, or an error message if invalid.
+        """
+        try:
+            token_check(token)
+            payload: dict = decode_token(token)
+            new_token = create_access_token(
+                payload['sub'],
+                additional_claims={"type": "password_new"},
+                expires_delta=timedelta(minutes=30))
+            token_insert(new_token)
+            return jsonify({
+                "message": "You can set a new password",
+                "token": new_token
+            }), 200
+        except (UserEmailNotValide, TokenAlreadyUsed) as e:
+            return jsonify({"error": str(e)}), 415
 
-            return jsonify({"email": update(data, payload['sub'])}), 200
-        except UserEmailNotValide as e:
+    @staticmethod
+    @security_blueprint.route('/password_new', methods=["PATCH"])
+    @limiter.limit("5/minute")
+    def password_new():
+        """
+        Changes the user's password after token verification.
+        
+        Returns:
+            JSON: Confirmation message or an error if the token is invalid.
+        """
+        try:
+            data: dict = request.json
+            token_check(data['token'])
+            payload: dict = decode_token(data['token'])
+            User_validator.validate_psw(data["password"])
+            data["password"] = generate_password_hash(data["password"],
+                                                      method="pbkdf2:sha256",
+                                                      salt_length=16)
+            updated_user = update(data, payload['sub'])
+            return jsonify({"email": updated_user["email"]}), 200
+        except (UserEmailNotValide, TokenAlreadyUsed) as e:
+            return jsonify({"error": str(e)}), 415
+        except UserPasswordNotValid as e:
             return jsonify({"error": str(e)}), 415
 
     @security_blueprint.errorhandler(RateLimitExceeded)
     def handle_rate_limit_error(e):
         """
-        Gère les erreurs de limite de taux.
-
-        Cette méthode est un gestionnaire d'erreurs pour les exceptions `RateLimitExceeded`.
-        Elle retourne une réponse JSON avec un message d'erreur indiquant que le taux de requêtes a été dépassé.
-
+        Handles rate limit exceeded errors.
+        
         Args:
-            e (RateLimitExceeded): L'exception de limite de taux.
-
+            e (RateLimitExceeded): Rate limit error.
+        
         Returns:
-            JSON response: Réponse JSON contenant un message d'erreur et une description de l'exception.
+            JSON: Error message and 429 status code.
         """
         return jsonify({
             "error": "Too many requests",
-            "message": str(e.description),
+            "message": str(e.description)
         }), 429
