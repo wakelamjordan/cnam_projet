@@ -48,6 +48,7 @@ def init_db():
     engine = get_engine()  # Récupère le moteur de la base de données
     from .user_model import User  # Importation du modèle User pour qu'il soit enregistré dans la base
     from .role_model import Role
+    from .token_model import Token
     Base.metadata.create_all(
         engine)  # Crée toutes les tables des modèles SQLAlchemy
 

@@ -47,7 +47,7 @@ def test_login_admin(client, headers):
         "password": "lnYg6Rtwp9NqEm$ygUjxf1u17"
     }
 
-    response = client.post("/login/", json=payload, headers=headers)
+    response = client.post("/login", json=payload, headers=headers)
 
     assert response.status_code == 200
     assert response.json.get("message") == "Login successful"
@@ -67,7 +67,7 @@ def test_login_false(client, headers):
         "password": "Vdqcw4TympGe3lrKbpUUrN79@e"
     }
 
-    response = client.post("/login/", json=payload, headers=headers)
+    response = client.post("/login", json=payload, headers=headers)
 
     assert response.status_code == 401
     assert response.json.get("error") == "Invalid email or password."
@@ -86,7 +86,7 @@ def test_login_email_bad_format(client, headers):
         "password": "Vdqcw4TympGe3lrKbpUUrN79@e"
     }
 
-    response = client.post("/login/", json=payload, headers=headers)
+    response = client.post("/login", json=payload, headers=headers)
 
     assert response.status_code == 415
     assert response.json.get("error") == "Email not valid"
@@ -107,7 +107,7 @@ def test_login_user(client, headers):
         "password": "lnYg6Rtwp9NqEm$ygUjxf1u17"
     }
 
-    response = client.post("/login/", json=payload, headers=headers)
+    response = client.post("/login", json=payload, headers=headers)
 
     assert response.status_code == 200
     assert response.json.get("message") == "Login successful"
@@ -542,7 +542,7 @@ def test_user_get_all_admin(client, headers):
     global ADMIN_TOKEN
     headers_with_token = headers
     headers_with_token["Authorization"] = "Bearer " + ADMIN_TOKEN
-    response = client.get("/user/", headers=headers_with_token)
+    response = client.get("/user", headers=headers_with_token)
     assert response.status_code == 200
 
 
@@ -556,7 +556,7 @@ def test_user_get_all_user(client, headers):
     global USER_TOKEN
     headers_with_token = headers
     headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
-    response = client.get("/user/", headers=headers_with_token)
+    response = client.get("/user", headers=headers_with_token)
     assert response.status_code == 403
 
 
@@ -569,7 +569,7 @@ def test_user_get_all_not_logged(client, headers):
     - Vérifie que le message d'erreur est "Missing Authorization Header".
     """
     headers_with_token = headers
-    response = client.get("/user/", headers=headers_with_token)
+    response = client.get("/user", headers=headers_with_token)
     assert response.status_code == 401
     assert response.json.get("msg") == "Missing Authorization Header"
 

@@ -1,0 +1,71 @@
+<!--
+Variables disponibles :
+- user_name (str) : Le nom de l'utilisateur recevant l'email.
+- reset_url (str) : L'URL pour réinitialiser le mot de passe.
+- current_year (int) : L'année actuelle à afficher dans le footer.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <style>
+        :root {
+            --color-1: #ed1c24;
+            /* Couleur principale */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            color: white;
+            background-color: var(--color-1);
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background-color: #c4161c;
+            /* Légèrement plus foncé pour l'effet hover */
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Hello, {{ user_name }}!</h2>
+        <p>We received a request to reset your password. Click the button below to proceed:</p>
+        <a class="btn" href="{{ reset_url }}">Reset My Password</a>
+        <p>If you did not request a password reset, you can safely ignore this email.</p>
+        <p class="footer">© {{ current_year }} Your Company. All rights reserved.</p>
+    </div>
+</body>
+
+</html>

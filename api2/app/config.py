@@ -24,6 +24,18 @@ class Config:
     TESTING = False
     JWT_SECRET_KEY = 'super-secret'
 
+    MAIL_SERVER: str = "127.168.1.1"
+    MAIL_PORT: int = 1025
+    MAIL_USE_TLS: bool = False
+    MAIL_USE_SSL: bool = False
+    # MAIL_DEBUG: bool = app.debug
+    MAIL_USERNAME: str | None = None
+    MAIL_PASSWORD: str | None = None
+    MAIL_DEFAULT_SENDER: str = "mairie@gmail.com"
+    MAIL_MAX_EMAILS: int | None = None
+    # MAIL_SUPPRESS_SEND: bool = app.testing
+    MAIL_ASCII_ATTACHMENTS: bool = False
+
 
 class Test_config(Config):
     """
@@ -37,4 +49,4 @@ class Test_config(Config):
         SQLALCHEMY_DATABASE_URI (str): URI de la base de données SQLAlchemy utilisée pour les tests.
     """
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///test/test.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///test.db"

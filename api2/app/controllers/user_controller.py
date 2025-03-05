@@ -1,10 +1,11 @@
 from flask import Blueprint, jsonify, request, Response
-from app.services.user_service import (insert as service_insert, delete as
+from app.services.user_service import (delete as
                                        service_delete, find_by_email as
                                        service_find_by_email, find_all as
                                        service_find_all, update as
                                        service_update, replace as
                                        service_replace)
+from app.services.security_service import insert as service_security_insert
 import string
 import secrets
 from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide, UserPasswordNotValid, UserDataIncomplete
@@ -25,7 +26,7 @@ class UserController:
     """
 
     @staticmethod
-    @user_blueprint.route('/', methods=['GET'])
+    @user_blueprint.route('', methods=['GET'])
     @jwt_required()
     def _get_all() -> Response:
         """
@@ -185,7 +186,7 @@ class UserController:
             data: dict = request.json
             User_validator.validate_email(data["email"])
             data["password"] = UserController._generate_psw()
-            email_insert = service_insert(data)
+            email_insert = service_security_insert(data)
             return jsonify({'email': email_insert}), 201
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 415
