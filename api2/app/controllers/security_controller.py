@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.security_service import login as login_service, password_reset as reset_service, token_check, token_insert
+from app.services.security_service import login as login_service, password_reset as reset_service, token_check, token_insert, token_delete
 from app.errors.security_error import LoginError, TokenAlreadyUsed
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
@@ -93,7 +93,7 @@ class SecurityController:
     def inscription_complete_patch():
         try:
             data: dict = request.json
-            token_check(data["token"])
+            token_delete(data["token"])
             payload: dict = decode_token(data["token"])
 
             User_validator.validate_psw(data["password"])
@@ -171,7 +171,7 @@ class SecurityController:
         """
         try:
             data: dict = request.json
-            token_check(data['token'])
+            token_delete(data['token'])
             payload: dict = decode_token(data['token'])
             User_validator.validate_psw(data["password"])
             data["password"] = generate_password_hash(data["password"],

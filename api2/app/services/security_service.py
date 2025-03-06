@@ -163,6 +163,20 @@ def make_link(route: str, email: str, type: str) -> dict:
     }
 
 
+def token_delete(token: str) -> bool:
+    db: Session = next(get_db())
+    try:
+        token_find = db.query(Token).filter(Token._token == token).first()
+        if not token_find:
+            raise TokenAlreadyUsed
+        token_purge(db)
+        db.delete(token_find)
+        db.commit()
+        return True
+    finally:
+        db.close()
+
+
 def token_check(token: str) -> bool:
     """
     Verifies if a token is still valid and has not been used before.
@@ -181,9 +195,9 @@ def token_check(token: str) -> bool:
         token_find = db.query(Token).filter(Token._token == token).first()
         if not token_find:
             raise TokenAlreadyUsed
-        token_purge(db)
-        db.delete(token_find)
-        db.commit()
+        # token_purge(db)
+        # db.delete(token_find)
+        # db.commit()
         return True
     finally:
         db.close()
