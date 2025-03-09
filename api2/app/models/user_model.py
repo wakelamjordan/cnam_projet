@@ -3,7 +3,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, DateTime, ForeignKey
 from typing import Optional
-from app.models.role_model import Role
+# from app.models.role_model import Role
 from app.models.publication_model import Publication
 
 aware_datetime = datetime.now(timezone.utc)

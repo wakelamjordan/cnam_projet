@@ -2,11 +2,11 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String
 from typing import Optional
-from app.models.publication_photo_model import PublicationPhoto
+# from app.models.publication_photo_model import PublicationPhoto
 
 
 class Photo(Base):
-    __tablename__ = 'Photo'
+    __tablename__ = 'photo'
 
     # Chemin d'accès à la photo (clé primaire)
     _path: Mapped[str] = mapped_column("path", String(50), primary_key=True)

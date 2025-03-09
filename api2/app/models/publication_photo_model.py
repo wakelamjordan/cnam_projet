@@ -2,7 +2,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey
 from typing import Optional
-from app.models.photo_model import Photo
+# from app.models.photo_model import Photo
 
 
 class PublicationPhoto(Base):
@@ -17,12 +17,14 @@ class PublicationPhoto(Base):
     __tablename__ = 'publication_photo'
 
     # Clé étrangère pointant vers la publication
-    _publication: Mapped[str] = mapped_column(String(100),
+    _publication: Mapped[str] = mapped_column("publication",
+                                              String(100),
                                               ForeignKey("publication.title"),
                                               primary_key=True)
 
     # Clé étrangère pointant vers la photo
-    _photo: Mapped[str] = mapped_column(String(50),
+    _photo: Mapped[str] = mapped_column("photo",
+                                        String(50),
                                         ForeignKey("photo.path"),
                                         primary_key=True)
 

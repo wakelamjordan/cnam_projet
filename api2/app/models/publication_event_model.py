@@ -1,8 +1,8 @@
 from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey, INTEGER
-from app.models.publication_model import Publication
-from app.models.event_model import Event
+# from app.models.publication_model import Publication
+# from app.models.event_model import Event
 
 
 class PublicationEvent(Base):
@@ -16,7 +16,8 @@ class PublicationEvent(Base):
 
     __tablename__ = 'publication_event'
 
-    _publication: Mapped[str] = mapped_column(String(100),
+    _publication: Mapped[str] = mapped_column("publication",
+                                              String(100),
                                               ForeignKey("publication.title"),
                                               primary_key=True)
     _event: Mapped[int] = mapped_column("event",

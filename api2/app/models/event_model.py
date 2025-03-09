@@ -2,7 +2,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, INTEGER, DateTime
 from datetime import datetime, timezone, date
-from app.models.publication_event_model import PublicationEvent
+# from app.models.publication_event_model import PublicationEvent
 
 aware_datetime = datetime.now(timezone.utc)
 

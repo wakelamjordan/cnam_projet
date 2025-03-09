@@ -2,7 +2,7 @@ from . import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Boolean, ForeignKey
 from typing import Optional
-from app.models.user_model import User
+# from app.models.user_model import User
 
 
 class Publication(Base):
@@ -36,8 +36,10 @@ class Publication(Base):
         self._slug = slug
         self._description = description
         self._content = content
-        self._on_line = on_line
         self._revision = revision
+        if revision:
+            on_line = False
+        self._on_line = on_line
         self._author_email = author_email
         self._category = category
 

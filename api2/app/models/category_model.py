@@ -3,7 +3,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey
 from typing import Optional, List
-from app.models.role_model import Role
+# from app.models.role_model import Role
 
 
 class Category(Base):

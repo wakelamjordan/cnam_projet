@@ -2,8 +2,8 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String
 from typing import Optional, List
-from app.models.category_model import Category
-from app.models.user_model import User
+# from app.models.category_model import Category
+# from app.models.user_model import User
 
 
 class Role(Base):

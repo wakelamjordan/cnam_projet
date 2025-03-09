@@ -2,7 +2,7 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey
 from typing import Optional
-from app.models.publication_models import Publication
+# from app.models.publication_models import Publication
 
 
 class HomePageContent(Base):
