@@ -7,7 +7,7 @@ from typing import Optional
 aware_datetime = datetime.now(timezone.utc)
 
 
-class User(Base):
+class Category(Base):
     """
     Modèle représentant un utilisateur dans la base de données.
 
@@ -25,22 +25,19 @@ class User(Base):
         role (Relationship) : Relation avec le modèle Role.
     """
 
-    __tablename__ = 'user'
+    __tablename__ = 'category'
 
-    _email: Mapped[str] = mapped_column("email", String(50), primary_key=True)
-    _password: Mapped[str] = mapped_column("password", String(50))
-    _firstname: Mapped[Optional[str]] = mapped_column("firstname")
-    _lastname: Mapped[Optional[str]] = mapped_column("lastname")
-    _birth_at: Mapped[Optional[date]] = mapped_column("birth_at")
-    _created_at: Mapped[datetime] = mapped_column("created_at",
-                                                  DateTime(timezone=True),
-                                                  default=aware_datetime)
-    _login_at: Mapped[Optional[datetime]] = mapped_column("login_at")
+    _name: Mapped[str] = mapped_column("name", String(50), primary_key=True)
+    _url: Mapped[str] = mapped_column("url", String(50))
+    _no: Mapped[Optional[int]] = mapped_column("no")
+    _parent: Mapped[Optional[str]] = mapped_column("parent", String(50),
+                                                   ForeignKey("category.name"))
 
     _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
                                                  nullable=True)
-
-    role = relationship("Role", back_populates="users")
+    role = relationship("Role")
+    parent = relationship("Category", back_populates="children")
+    children = relationship("Category", back_populates="parent")
 
     def __init__(self, email: str):
         """
