@@ -1,227 +1,134 @@
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone
 from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import String, DateTime, ForeignKey
-from typing import Optional
-
-aware_datetime = datetime.now(timezone.utc)
+from sqlalchemy import String, ForeignKey
+from typing import Optional, List
+from app.models.role_model import Role
 
 
 class Category(Base):
     """
-    Modèle représentant un utilisateur dans la base de données.
-
-    Attributs:
-        _email (str) : L'email de l'utilisateur, utilisé comme clé primaire.
-        _password (str) : Le mot de passe de l'utilisateur.
-        _firstname (Optional[str]) : Le prénom de l'utilisateur.
-        _lastname (Optional[str]) : Le nom de famille de l'utilisateur.
-        _birth_at (Optional[date]) : La date de naissance de l'utilisateur.
-        _created_at (datetime) : La date et l'heure de création de l'utilisateur.
-        _login_at (Optional[datetime]) : La date et l'heure de la dernière connexion de l'utilisateur.
-        _role (Optional[str]) : Le rôle de l'utilisateur, lié à la table des rôles.
-
-    Relations:
-        role (Relationship) : Relation avec le modèle Role.
+    Représente une catégorie qui peut contenir des sous-catégories 
+    (relation Many-to-One auto-référencée).
+    Chaque catégorie peut être liée à un rôle.
     """
 
     __tablename__ = 'category'
 
+    # Clé primaire : Nom unique de la catégorie
     _name: Mapped[str] = mapped_column("name", String(50), primary_key=True)
-    _url: Mapped[str] = mapped_column("url", String(50))
-    _no: Mapped[Optional[int]] = mapped_column("no")
-    _parent: Mapped[Optional[str]] = mapped_column("parent", String(50),
-                                                   ForeignKey("category.name"))
 
+    # URL associée à la catégorie
+    _url: Mapped[str] = mapped_column("url", String(50))
+
+    # Numéro optionnel pour ordonner les catégories
+    _no: Mapped[Optional[int]] = mapped_column("no")
+
+    # Clé étrangère optionnelle : Référence au parent (catégorie parente)
+    _parent: Mapped[Optional[str]] = mapped_column("parent",
+                                                   String(50),
+                                                   ForeignKey("category.name"),
+                                                   nullable=True)
+
+    # Clé étrangère optionnelle : Référence à un rôle
     _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
                                                  nullable=True)
-    role = relationship("Role")
-    parent = relationship("Category", back_populates="children")
-    children = relationship("Category", back_populates="parent")
 
-    def __init__(self, email: str):
-        """
-        Initialise un nouvel utilisateur avec un email.
+    # Relation avec le rôle (Many-to-One)
+    role: Mapped[Optional["Role"]] = relationship("Role",
+                                                  back_populates="categories")
 
-        Paramètres:
-            email (str) : L'email de l'utilisateur.
-        """
-        self._email = email
+    # Relation avec la catégorie parente (Many-to-One)
+    parent: Mapped[Optional["Category"]] = relationship(
+        "Category", back_populates="children", remote_side="Category._name")
 
-    def __repr__(self):
-        """
-        Retourne une représentation sous forme de chaîne de l'objet utilisateur.
+    # Relation avec les sous-catégories (One-to-Many) sans suppression automatique
+    children: Mapped[List["Category"]] = relationship("Category",
+                                                      back_populates="parent")
 
-        Retourne:
-            str : Représentation de l'utilisateur.
+    def __init__(self,
+                 name: str,
+                 url: str,
+                 no: Optional[int] = None,
+                 parent: Optional[str] = None,
+                 role: Optional[str] = None):
         """
-        return (
-            f'<User(email={self.get_email()},role={self.get_role()}, firstname={self.get_firstname()}, '
-            f'lastname={self.get_lastname()}, birth_at={self.get_birth_at()}, '
-            f'created_at={self.get_created_at()}, login_at={self.get_login_at()}, password={self.get_password()})>'
-        )
+        Initialise une nouvelle catégorie.
 
-    def to_dict(self):
+        :param name: Nom de la catégorie.
+        :param url: URL associée à la catégorie.
+        :param no: Numéro optionnel pour ordonner les catégories.
+        :param parent: Nom de la catégorie parente (si applicable).
+        :param role: Nom du rôle associé (si applicable).
         """
-        Convertit les informations de l'utilisateur en dictionnaire.
-
-        Retourne:
-            dict : Un dictionnaire contenant les informations de l'utilisateur.
-        """
-        return {
-            "email": self.get_email(),
-            "role": self.get_role(),
-            "firstname": self.get_firstname(),
-            "lastname": self.get_lastname(),
-            "birth_at": self.get_birth_at(),
-            "created_at": self.get_created_at(),
-            "login_at": self.get_login_at(),
-            "password": self.get_password()
-        }
-
-    def to_dict_auth(self):
-        """
-        Convertit les informations d'authentification de l'utilisateur en dictionnaire.
-
-        Retourne:
-            dict : Un dictionnaire contenant les informations d'authentification de l'utilisateur.
-        """
-        return {
-            "email": self.get_email(),
-            "role": self.get_role(),
-            "firstname": self.get_firstname(),
-            "lastname": self.get_lastname(),
-            "password": self.get_password()
-        }
-
-    def get_login_at(self) -> Optional[datetime]:
-        """
-        Retourne la date et l'heure de la dernière connexion de l'utilisateur.
-
-        Retourne:
-            Optional[datetime] : La date et l'heure de la dernière connexion.
-        """
-        return self._login_at
-
-    def set_login_at(self) -> None:
-        """
-        Définit la date et l'heure de la dernière connexion de l'utilisateur à l'heure actuelle.
-        """
-        self._login_at = aware_datetime
-
-    def get_role(self) -> Optional[str]:
-        """
-        Retourne le rôle de l'utilisateur.
-
-        Retourne:
-            Optional[str] : Le rôle de l'utilisateur.
-        """
-        return self._role
-
-    def set_role(self, role: str) -> None:
-        """
-        Définit le rôle de l'utilisateur.
-
-        Paramètres:
-            role (str) : Le rôle à définir.
-        """
+        self._name = name
+        self._url = url
+        self._no = no
+        self._parent = parent
         self._role = role
 
-    def get_email(self) -> str:
+    def __repr__(self) -> str:
         """
-        Retourne l'email de l'utilisateur.
+        Représentation textuelle de l'objet Category.
 
-        Retourne:
-            str : L'email de l'utilisateur.
+        :return: Chaîne représentant la catégorie.
         """
-        return self._email
+        return f'<Category(name={self._name}, parent={self._parent}, role={self._role})>'
 
-    def set_email(self, email: str) -> None:
+    def to_dict(self) -> dict:
         """
-        Définit l'email de l'utilisateur.
+        Convertit la catégorie en dictionnaire.
 
-        Paramètres:
-            email (str) : L'email à définir.
+        :return: Dictionnaire contenant les données de la catégorie.
         """
-        self._email = email
+        return {
+            "name": self._name,
+            "url": self._url,
+            "no": self._no,
+            "parent": self._parent,
+            "role": self._role
+        }
 
-    def get_password(self) -> str:
-        """
-        Retourne le mot de passe de l'utilisateur.
+    # GETTERS
 
-        Retourne:
-            str : Le mot de passe de l'utilisateur.
-        """
-        return self._password
+    def get_name(self) -> str:
+        """Retourne le nom de la catégorie."""
+        return self._name
 
-    def set_password(self, password: str) -> None:
-        """
-        Définit le mot de passe de l'utilisateur.
+    def get_url(self) -> str:
+        """Retourne l'URL de la catégorie."""
+        return self._url
 
-        Paramètres:
-            password (str) : Le mot de passe à définir.
-        """
-        self._password = password
+    def get_no(self) -> Optional[int]:
+        """Retourne le numéro de la catégorie (s'il existe)."""
+        return self._no
 
-    def get_firstname(self) -> Optional[str]:
-        """
-        Retourne le prénom de l'utilisateur.
+    def get_parent(self) -> Optional[str]:
+        """Retourne le nom de la catégorie parente (s'il y en a une)."""
+        return self._parent
 
-        Retourne:
-            Optional[str] : Le prénom de l'utilisateur.
-        """
-        return self._firstname
+    def get_role(self) -> Optional[str]:
+        """Retourne le rôle associé à la catégorie."""
+        return self._role
 
-    def set_firstname(self, firstname: str) -> None:
-        """
-        Définit le prénom de l'utilisateur.
+    # SETTERS
 
-        Paramètres:
-            firstname (str) : Le prénom à définir.
-        """
-        self._firstname = firstname
+    def set_name(self, name: str) -> None:
+        """Définit le nom de la catégorie."""
+        self._name = name
 
-    def get_lastname(self) -> Optional[str]:
-        """
-        Retourne le nom de famille de l'utilisateur.
+    def set_url(self, url: str) -> None:
+        """Définit l'URL de la catégorie."""
+        self._url = url
 
-        Retourne:
-            Optional[str] : Le nom de famille de l'utilisateur.
-        """
-        return self._lastname
+    def set_no(self, no: Optional[int]) -> None:
+        """Définit le numéro de la catégorie."""
+        self._no = no
 
-    def set_lastname(self, lastname: str) -> None:
-        """
-        Définit le nom de famille de l'utilisateur.
+    def set_parent(self, parent: Optional[str]) -> None:
+        """Définit la catégorie parente."""
+        self._parent = parent
 
-        Paramètres:
-            lastname (str) : Le nom de famille à définir.
-        """
-        self._lastname = lastname
-
-    def get_birth_at(self) -> Optional[date]:
-        """
-        Retourne la date de naissance de l'utilisateur.
-
-        Retourne:
-            Optional[date] : La date de naissance de l'utilisateur.
-        """
-        return self._birth_at
-
-    def set_birth_at(self, birth_at: date) -> None:
-        """
-        Définit la date de naissance de l'utilisateur.
-
-        Paramètres:
-            birth_at (date) : La date de naissance à définir.
-        """
-        self._birth_at = birth_at
-
-    def get_created_at(self) -> datetime:
-        """
-        Retourne la date et l'heure de création de l'utilisateur.
-
-        Retourne:
-            datetime : La date et l'heure de création de l'utilisateur.
-        """
-        return self._created_at
+    def set_role(self, role: Optional[str]) -> None:
+        """Définit le rôle associé à la catégorie."""
+        self._role = role

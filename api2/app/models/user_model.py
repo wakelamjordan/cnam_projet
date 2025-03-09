@@ -3,6 +3,8 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, DateTime, ForeignKey
 from typing import Optional
+from app.models.role_model import Role
+from app.models.publication_model import Publication
 
 aware_datetime = datetime.now(timezone.utc)
 
@@ -24,7 +26,6 @@ class User(Base):
     Relations:
         role (Relationship) : Relation avec le modèle Role.
     """
-
     __tablename__ = 'user'
 
     _email: Mapped[str] = mapped_column("email", String(50), primary_key=True)
@@ -40,7 +41,13 @@ class User(Base):
     _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
                                                  nullable=True)
 
-    role = relationship("Role", back_populates="users")
+    role: Mapped[Optional["Role"]] = relationship("Role",
+                                                  back_populates="users")
+    publications: Mapped[list["Publication"]] = relationship(
+        "Publication", back_populates="author",
+        cascade="save-update")  # Pas de suppression en cascade ici.
+
+    # Rest of the methods...
 
     def __init__(self, email: str):
         """

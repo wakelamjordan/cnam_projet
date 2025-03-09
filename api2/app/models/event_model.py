@@ -1,7 +1,8 @@
 from . import Base
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, INTEGER, DateTime
 from datetime import datetime, timezone, date
+from app.models.publication_event_model import PublicationEvent
 
 aware_datetime = datetime.now(timezone.utc)
 
@@ -27,6 +28,11 @@ class Event(Base):
                                                 DateTime(timezone=True),
                                                 default=aware_datetime)
     _description: Mapped[str] = mapped_column("description", String(200))
+
+    publication: Mapped["PublicationEvent"] = relationship(
+        "PublicationEvent",
+        back_populates="event",
+        cascade="all, delete-orphan")
 
     def __init__(self, title: str, event_at: datetime, description: str):
         """
