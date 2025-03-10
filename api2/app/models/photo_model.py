@@ -1,6 +1,6 @@
 from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import String
+from sqlalchemy import String, ForeignKey
 from typing import Optional
 # from app.models.publication_photo_model import PublicationPhoto
 
@@ -17,11 +17,21 @@ class Photo(Base):
     # Description de la photo
     _description: Mapped[str] = mapped_column("description", String(50))
 
+    _no: Mapped[Optional[int]] = mapped_column("no", nullable=True)
+
+    _publication: Mapped[str] = mapped_column("publication",
+                                              String(100),
+                                              ForeignKey("publication.title"),
+                                              primary_key=True)
+
+    photo: Mapped["Photo"] = relationship("Publication",
+                                          back_populates="photos")
+
     # Relation avec PublicationPhoto : suppression des références dans PublicationPhoto si Photo est supprimée
-    publication_photo: Mapped[Optional["PublicationPhoto"]] = relationship(
-        "PublicationPhoto",
-        back_populates="photo",
-        cascade="all, delete-orphan")
+    # publication_photo: Mapped[Optional["PublicationPhoto"]] = relationship(
+    #     "PublicationPhoto",
+    #     back_populates="photo",
+    #     cascade="all, delete-orphan")
 
     def __init__(self, path: str, name: str = "", description: str = ""):
         """

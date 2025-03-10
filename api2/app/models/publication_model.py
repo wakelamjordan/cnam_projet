@@ -29,6 +29,9 @@ class Publication(Base):
     events: Mapped[list[Optional["PublicationEvent"]]] = relationship(
         "PublicationEvent", back_populates="publication")
 
+    photos: Mapped[list[Optional["Photo"]]] = relationship(
+        "Photo", back_populates="photo", cascade="all, delete-orphan")
+
     def __init__(self,
                  title: str,
                  slug: str,

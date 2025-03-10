@@ -1,23 +1,10 @@
 from app.models import get_db
 from app.models.publication_model import Publication as Entity
 from sqlalchemy.orm import Session
-from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide
+from app.errors.publication_error import PublicationSlugDoesExist, PublicationTitleDoesExist, PublicationNotExist, PublicationIsOnLine
 
 
 def insert(entity_dict: dict) -> str:
-    """
-    Inserts a new user into the database.
-
-    Parameters:
-        entity_dict (dict): A dictionary containing the user's information to be inserted.
-
-    Returns:
-        str: The email of the newly inserted user.
-
-    Raises:
-        UserEmailDoesExist: If the email already exists.
-        UserEmailNotValide: If the email is invalid.
-    """
     db: Session = next(get_db())
 
     try:
@@ -25,103 +12,156 @@ def insert(entity_dict: dict) -> str:
         check_title = db.query(Entity).filter(
             Entity._title == entity_dict["title"]).first()
         if check_title is not None:
-            raise UserEmailDoesExist()
+            raise PublicationTitleDoesExist()
         check_slug = db.query(Entity).filter(
             Entity._slug == entity_dict["slug"]).first()
         if check_slug is not None:
-            raise UserEmailDoesExist()
-        entity: Entity = Entity(entity_dict["email"])
-        entity.set_password(entity_dict["password"])
+            raise PublicationSlugDoesExist()
+        if not "on_line" in entity_dict:
+            entity_dict["on_line"] = False
+        entity: Entity = Entity(
+            entity_dict["title"],
+            entity_dict["slug"],
+            entity_dict["description"],
+            entity_dict["content"],
+            entity_dict["on_line"],
+            entity_dict["revision"],
+            entity_dict["author_email"],
+            entity_dict["category"],
+        )
+
         db.add(entity)
         db.commit()
 
-        return entity_dict["email"]
-    except UserEmailDoesExist:
+        return entity.get_slug()
+        # return entity_dict["email"]
+    except PublicationTitleDoesExist:
         db.rollback()
         raise
-    except UserEmailNotValide:
+    except PublicationSlugDoesExist:
         db.rollback()
         raise
     finally:
         db.close()
 
 
-# def delete(entity_dict: dict) -> str:
-#     """
-#     Deletes a user from the database based on their email.
+def delete(entity_dict: dict) -> str:
+    # return entity_dict["author_email"]
+    db: Session = next(get_db())
+    try:
+        if "author_email" in entity_dict:
+            entity_find = db.query(Entity).filter(
+                Entity._author_email == entity_dict["author_email"],
+                Entity._title == entity_dict["title"]).first()
+        else:
+            entity_find = db.query(Entity).filter(
+                Entity._title == entity_dict["title"]).first()
 
-#     Parameters:
-#         entity_dict (dict): A dictionary containing the email of the user to be deleted.
+        if not entity_find:
+            raise PublicationNotExist()
 
-#     Returns:
-#         str: The email of the deleted user.
+        if entity_find.get_on_line() == True:
+            raise PublicationIsOnLine()
+        db.delete(entity_find)
+        db.commit()
+        return entity_find.get_slug()
+    except PublicationNotExist:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
-#     Raises:
-#         UserNotFoundError: If the user is not found.
-#     """
-#     db: Session = next(get_db())
-#     try:
-#         entity_find = db.query(Entity).filter(
-#             Entity._email == entity_dict["email"]).first()
-#         if not entity_find:
-#             raise UserNotFoundError()
-#         db.delete(entity_find)
-#         db.commit()
-#         return entity_dict["email"]
-#     except UserNotFoundError:
-#         db.rollback()
-#         raise
-#     finally:
-#         db.close()
 
-# def find_by_email(entity_dict: dict) -> dict:
-#     """
-#     Finds a user in the database based on their email.
+def toggle_on_line(entity_dict: dict) -> str:
+    # return entity_dict["author_email"]
+    db: Session = next(get_db())
+    try:
+        # if "author_email" in entity_dict:
+        entity_find = db.query(Entity).filter(
+            Entity._title == entity_dict["title"]).first()
+        # else:
+        #     entity_find = db.query(Entity).filter(
+        #         Entity._title == entity_dict["title"]).first()
+        if not entity_find:
+            raise PublicationNotExist()
 
-#     Parameters:
-#         entity_dict (dict): A dictionary containing the email of the user to search for.
+        entity_find.set_on_line(not entity_find.get_on_line())
+        entity_find.set_revision(False)
 
-#     Returns:
-#         dict: The user's information, excluding the password.
+        db.add(entity_find)
+        db.commit()
+        return entity_find.get_slug()
+    except PublicationNotExist:
+        db.rollback()
+        raise
+    finally:
+        db.close()
 
-#     Raises:
-#         UserNotFoundError: If the user is not found.
-#     """
-#     db: Session = next(get_db())
-#     try:
-#         entity = db.query(Entity).filter(
-#             Entity._email == entity_dict["email"]).first()
-#         if not entity:
-#             raise UserNotFoundError()
-#         result = entity.to_dict()
-#         del result["password"]
-#         return result
-#     except:
-#         db.rollback()
-#         raise
 
-# def find_all() -> list:
-#     """
-#     Retrieves all users from the database.
+def toggle_revision(entity_dict: dict) -> str:
+    # return entity_dict["author_email"]
+    db: Session = next(get_db())
+    try:
+        if "author_email" in entity_dict:
+            entity_find = db.query(Entity).filter(
+                Entity._title == entity_dict["title"],
+                Entity._author_email == entity_dict["author_email"]).first()
+        else:
+            entity_find = db.query(Entity).filter(
+                Entity._title == entity_dict["title"]).first()
+        if not entity_find:
+            raise PublicationNotExist()
 
-#     Returns:
-#         list: A list of dictionaries containing the users' information, excluding the passwords.
+        entity_find.set_revision(not entity_find.get_revision())
 
-#     Raises:
-#         Exception: If an error occurs while retrieving the users.
-#     """
-#     db: Session = next(get_db())
-#     try:
-#         entities = db.query(Entity).all()
-#         for i in range(len(entities)):
-#             entities[i] = entities[i].to_dict()
-#             del entities[i]["password"]
-#         db.commit()
-#         return entities
-#     except Exception as e:
-#         raise Exception(f"An error occurred: {str(e)}")
-#     finally:
-#         db.close()
+        db.add(entity_find)
+        db.commit()
+        # return entity_find.to_dict()
+        return entity_find.get_slug()
+    except PublicationNotExist:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+def find_by_slug(entity_dict: dict) -> dict:
+    db: Session = next(get_db())
+    try:
+        entity = db.query(Entity).filter(
+            Entity._slug == entity_dict["slug"]).first()
+        if not entity:
+            raise PublicationNotExist()
+        if "role" in entity_dict and entity_dict["role"] == "ROLE_ADMIN":
+            return entity.to_dict()
+        elif entity.get_author_email() == entity_dict["author_email"]:
+            return entity.to_dict()
+        # elif not entity.get_on_line():
+        raise PublicationNotExist()
+        # return entity.to_dict()
+    except:
+        db.rollback()
+        raise
+
+
+def find_all(user_email: str = None) -> list:
+    db: Session = next(get_db())
+    try:
+        if not user_email:
+            entities = db.query(Entity).all()
+        else:
+            entities = db.query(Entity).filter(
+                Entity._author_email == user_email).all()
+        for i in range(len(entities)):
+            entities[i] = entities[i].to_dict()
+            # del entities[i]["password"]
+        db.commit()
+        return entities
+    except Exception as e:
+        raise Exception(f"An error occurred: {str(e)}")
+    finally:
+        db.close()
+
 
 # def replace(entity_dict: dict, email: str) -> dict:
 #     """
