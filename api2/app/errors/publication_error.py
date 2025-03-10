@@ -1,17 +1,17 @@
-# class UserNotFoundError(Exception):
-#     """
-#     Exception levée lorsqu'aucun utilisateur n'est trouvé.
+class UserNotFoundError(Exception):
+    """
+    Exception levée lorsqu'aucun utilisateur n'est trouvé.
 
-#     Cette exception est levée lorsque l'application tente de récupérer un utilisateur
-#     qui n'existe pas dans la base de données.
+    Cette exception est levée lorsque l'application tente de récupérer un utilisateur
+    qui n'existe pas dans la base de données.
 
-#     Attributes:
-#         message (str): Le message d'erreur associé à l'exception.
-#     """
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
 
-#     def __init__(self, message="User not found!"):
-#         self.message = message
-#         super().__init__(self.message)
+    def __init__(self, message="User not found!"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class UserEmailDoesExist(Exception):

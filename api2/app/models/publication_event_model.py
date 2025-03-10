@@ -26,8 +26,8 @@ class PublicationEvent(Base):
                                         primary_key=True)
     publication: Mapped["Publication"] = relationship("Publication",
                                                       back_populates="events")
-    event: Mapped["Event"] = relationship("Publication",
-                                          back_populates="publications")
+    event: Mapped["Event"] = relationship("Event",
+                                          back_populates="publication")
 
     def __init__(self, publication: str, event_id: int):
         """
