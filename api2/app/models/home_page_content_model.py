@@ -2,22 +2,21 @@ from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import String, ForeignKey
 from typing import Optional
-# from app.models.publication_models import Publication
 
 
 class HomePageContent(Base):
     """
     Modèle représentant un élément du contenu de la page d'accueil.
-    
+
     Chaque élément contient un nom, un identifiant unique, une description,
-    et une référence à une publication associée. Cette classe représente 
+    et une référence à une publication associée. Cette classe représente
     un lien vers une publication existante.
 
     Attributes:
         _name (str): Nom de l'élément.
         _element (str): Identifiant unique de l'élément.
         _description (str): Description de l'élément.
-        _publication (str): Référence à une publication existante.
+        _publication (Optional[str]): Référence à une publication existante.
         publication (Optional[Publication]): Relation avec la publication associée.
     """
 
@@ -40,7 +39,7 @@ class HomePageContent(Base):
         nullable=True)
 
     # Relation avec la publication associée
-    publication: Mapped[Optional["HomePageContent"]] = relationship(
+    publication: Mapped[Optional["Publication"]] = relationship(
         "Publication", back_populates="home_page_content")
 
     def __init__(self,
@@ -64,7 +63,7 @@ class HomePageContent(Base):
 
     def __repr__(self) -> str:
         """
-        Représentation textuelle de l'instance HomePageContent.
+        Retourne une représentation sous forme de chaîne de l'objet HomePageContent.
 
         Returns:
             str: Une chaîne représentant l'élément du contenu de la page d'accueil.
@@ -119,7 +118,7 @@ class HomePageContent(Base):
         Retourne la référence à la publication associée.
 
         Returns:
-            Optional[str]: La référence à la publication, ou None si aucun.
+            Optional[str]: La référence à la publication, ou None si aucune.
         """
         return self._publication
 

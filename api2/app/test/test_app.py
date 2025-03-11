@@ -4,6 +4,7 @@ import os
 
 ADMIN_TOKEN = None
 USER_TOKEN = None
+TEST_TOKEN = None
 
 
 @pytest.fixture
@@ -574,7 +575,212 @@ def test_user_get_all_not_logged(client, headers):
     assert response.json.get("msg") == "Missing Authorization Header"
 
 
-# --------------------delete
+# -publications------------all-for-user
+def test_publications_not_logged(client):
+    response = client.get("/publications")
+    assert response.status_code == 401
+    assert response.json.get("msg") == "Missing Authorization Header"
+
+
+def test_publications_logged_user(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    response = client.get("/publications", headers=headers_with_token)
+    assert response.status_code == 200
+    publications: dict = response.json.get("publications")
+    assert publications[0]['author_email'] == "user1@mail.com"
+
+
+def test_publications_logged_admin(client, headers):
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + ADMIN_TOKEN
+    response = client.get("/publications", headers=headers_with_token)
+    assert response.status_code == 200
+    publications: dict = response.json.get("publications")
+    assert publications[0]['author_email'] == "user1@mail.com"
+
+
+# -publication-------------------new
+def test_publication_new_not_logged(client, headers):
+    # global ADMIN_TOKEN
+    # headers_with_token = headers
+    # headers_with_token["Authorization"] = "Bearer " + ADMIN_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new", json=publication)
+    assert response.status_code == 401
+    # publications: dict = response.json.get("publications")
+    # assert publications[0]['author_email'] == "user1@mail.com"
+
+
+def test_publication_new_user_logged(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 200
+    publications: dict = response.json.get("message")
+    assert publications == "my-first-publication-test-user"
+
+
+def test_publication_new_user_logged_already_exist(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 403
+    publications: dict = response.json.get("error")
+    assert publications == 'Your title already exists!'
+
+    publication = {
+        "title": "My First Publication-test-usere",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 403
+    publications: dict = response.json.get("error")
+    assert publications == 'Your slug does exist!'
+
+
+# -publication-------------------PUT
+def test_publication_new_not_logged(client, headers):
+    # global ADMIN_TOKEN
+    # headers_with_token = headers
+    # headers_with_token["Authorization"] = "Bearer " + ADMIN_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.put("/publication/new", json=publication)
+    assert response.status_code == 401
+    # publications: dict = response.json.get("publications")
+    # assert publications[0]['author_email'] == "user1@mail.com"
+
+
+def test_publication_new_user_logged(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 200
+    publications: dict = response.json.get("message")
+    assert publications == "my-first-publication-test-user"
+
+
+def test_publication_new_user_logged_already_exist(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {
+        "title": "My First Publication-test-user",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 403
+    publications: dict = response.json.get("error")
+    assert publications == 'Your title already exists!'
+
+    publication = {
+        "title": "My First Publication-test-usere",
+        "slug": "my-first-publication-test-user",
+        "description": "This is a sample publication for testing purposes.",
+        "content":
+        "<h2>Qu’est-ce que c’est ?</h2> <p>La transition écologique est une évolution vers un nouveau modèle économique et social, un modèle de développement durable qui renouvelle nos façons de consommer, de produire, de travailler, de vivre ensemble pour répondre aux grands enjeux environnementaux : changement climatique, rareté des ressources, perte accélérée de la biodiversité et multiplication des risques sanitaires environnementaux.</p> <p>Cela regroupe donc un ensemble de principes, fondés sur les problématiques de résilience locale, d’économie circulaire et de réduction des émissions de CO2.</p> <h2>À Pussay</h2> <p>Pour répondre aux enjeux de la transition écologique de notre commune, la municipalité a mis en place une commission dédiée. Celle-ci, composée d’élus et de citoyens concernés et motivés, se réunit régulièrement pour aborder des thématiques variées, et réfléchir sur les réponses concrètes qui peuvent participer au mieux vivre ensemble.</p> <p>Cette commission travaille notamment sur un <strong>Atlas de la biodiversité Communale</strong>, en collaboration avec l’Agence Française pour la Biodiversité.</p> <h2>Présentation</h2> <h3>Un Atlas de la biodiversité communale, mais pour quoi faire ?</h3> <p>Chaque atlas est élaboré, à l’échelle communale ou intercommunale, à partir d’un inventaire précis et cartographié des habitats, de la faune et de la flore.</p> <p>Ces atlas ont pour objectifs de :</p> <ul> <li><strong>Sensibiliser et mobiliser</strong> les élus, les acteurs socio-économiques et les citoyens à la biodiversité.</li> <li><strong>Mieux connaître</strong> la biodiversité sur le territoire d’une commune et identifier les enjeux spécifiques liés.</li> <li><strong>Faciliter la prise en compte</strong> de la biodiversité lors de la mise en place des politiques locales.</li> </ul> <p>Cette démarche est soutenue par l’Agence française pour la biodiversité.</p> <h2>Résultats</h2> <p>Ce projet comprend deux composantes principales :</p> <h3>1. La réalisation d’un inventaire</h3> <p>Celui-ci a été réalisé courant 2019 par le bureau d’étude <strong>EcoloGIE</strong>. Il permet de répertorier les espèces et de préciser les secteurs méritant une protection complémentaire.</p> <p>Retrouvez le document complet : <a href='#'>Pussay ABC Ecolo-GIE.pdf</a></p> <h3>2. Des actions de sensibilisation et de mobilisation citoyenne</h3> <p>Nous avons souhaité que les habitants se sentent concernés. De nombreuses actions ont donc été proposées sur le thème de la biodiversité, animées par des associations locales.</p> <p>Complément d'inventaire : <a href='#'>Pussay complément messicoles - Ecolo GIE.pdf</a></p>",
+        "on_line": True,
+        "revision": False
+    }
+    response = client.post("/publication/new",
+                           json=publication,
+                           headers=headers_with_token)
+    assert response.status_code == 403
+    publications: dict = response.json.get("error")
+    assert publications == 'Your slug already exists!'
+
+
+# -publication-------------------delete
+def test_publication_delete_user_logged(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token["Authorization"] = "Bearer " + USER_TOKEN
+    # response = client.get("/publications", headers=headers_with_token)
+    publication = {"title": "My First Publication-test-user"}
+    response = client.delete("/publication/delete",
+                             json=publication,
+                             headers=headers_with_token)
+    assert response.status_code == 200
+    assert response.json.get("delete") == "my-first-publication-test-user"
+    # publications: dict = response.json.get("publications")
+    # assert publications[0]['author_email'] == "user1@mail.com"
+
+
+# -user-------------------delete
 def test_user_delete_admin(client, headers):
     """
     Teste la suppression d'un utilisateur par un administrateur.

@@ -17,15 +17,12 @@ class Photo(Base):
     # Description de la photo
     _description: Mapped[str] = mapped_column("description", String(50))
 
-    _no: Mapped[Optional[int]] = mapped_column("no", nullable=True)
+    publication_photos: Mapped[list["PublicationPhoto"]] = relationship(
+        "PublicationPhoto",
+        back_populates="photo",
+        cascade="all, delete-orphan")
 
-    _publication: Mapped[str] = mapped_column("publication",
-                                              String(100),
-                                              ForeignKey("publication.title"),
-                                              primary_key=True)
-
-    photo: Mapped["Photo"] = relationship("Publication",
-                                          back_populates="photos")
+    # _no: Mapped[Optional[int]] = mapped_column("no", nullable=True)
 
     # Relation avec PublicationPhoto : suppression des références dans PublicationPhoto si Photo est supprimée
     # publication_photo: Mapped[Optional["PublicationPhoto"]] = relationship(

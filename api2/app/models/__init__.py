@@ -52,7 +52,7 @@ def init_db():
     from .photo_model import Photo
     from .publication_event_model import PublicationEvent
     from .publication_model import Publication
-    # from .publication_photo_model import PublicationPhoto
+    from .publication_photo_model import PublicationPhoto
     from .role_model import Role
     from .token_model import Token
     from .user_model import User  # Importation du modèle User pour qu'il soit enregistré dans la base

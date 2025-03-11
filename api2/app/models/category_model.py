@@ -8,9 +8,20 @@ from typing import Optional, List
 
 class Category(Base):
     """
-    Représente une catégorie qui peut contenir des sous-catégories 
+    Représente une catégorie qui peut contenir des sous-catégories
     (relation Many-to-One auto-référencée).
     Chaque catégorie peut être liée à un rôle.
+
+    Attributes:
+        _name (str): Nom unique de la catégorie.
+        _url (Optional[str]): URL associée à la catégorie.
+        _no (Optional[int]): Numéro optionnel pour ordonner les catégories.
+        _parent (Optional[str]): Référence à la catégorie parente.
+        _role (Optional[str]): Référence à un rôle associé.
+        role (Optional[Role]): Relation avec le rôle associé.
+        parent (Optional[Category]): Relation avec la catégorie parente.
+        children (List[Category]): Relation avec les sous-catégories.
+        publications (List[Publication]): Relation avec les publications associées.
     """
 
     __tablename__ = 'category'
@@ -48,7 +59,7 @@ class Category(Base):
     children: Mapped[List["Category"]] = relationship("Category",
                                                       back_populates="parent")
 
-    publications: Mapped[list["Publication"]] = relationship(
+    publications: Mapped[List["Publication"]] = relationship(
         "Publication", back_populates="category", cascade="save-update")
 
     def __init__(self,
@@ -60,11 +71,12 @@ class Category(Base):
         """
         Initialise une nouvelle catégorie.
 
-        :param name: Nom de la catégorie.
-        :param url: URL associée à la catégorie.
-        :param no: Numéro optionnel pour ordonner les catégories.
-        :param parent: Nom de la catégorie parente (si applicable).
-        :param role: Nom du rôle associé (si applicable).
+        Args:
+            name (str): Nom de la catégorie.
+            url (str): URL associée à la catégorie.
+            no (Optional[int], optional): Numéro optionnel pour ordonner les catégories. Par défaut None.
+            parent (Optional[str], optional): Nom de la catégorie parente (si applicable). Par défaut None.
+            role (Optional[str], optional): Nom du rôle associé (si applicable). Par défaut None.
         """
         self._name = name
         self._url = url
@@ -74,9 +86,10 @@ class Category(Base):
 
     def __repr__(self) -> str:
         """
-        Représentation textuelle de l'objet Category.
+        Retourne une représentation sous forme de chaîne de l'objet Category.
 
-        :return: Chaîne représentant la catégorie.
+        Returns:
+            str: Chaîne représentant la catégorie.
         """
         return f'<Category(name={self._name}, parent={self._parent}, role={self._role})>'
 
@@ -84,7 +97,8 @@ class Category(Base):
         """
         Convertit la catégorie en dictionnaire.
 
-        :return: Dictionnaire contenant les données de la catégorie.
+        Returns:
+            dict: Dictionnaire contenant les données de la catégorie.
         """
         return {
             "name": self._name,
@@ -97,43 +111,93 @@ class Category(Base):
     # GETTERS
 
     def get_name(self) -> str:
-        """Retourne le nom de la catégorie."""
+        """
+        Retourne le nom de la catégorie.
+
+        Returns:
+            str: Le nom de la catégorie.
+        """
         return self._name
 
-    def get_url(self) -> str:
-        """Retourne l'URL de la catégorie."""
+    def get_url(self) -> Optional[str]:
+        """
+        Retourne l'URL de la catégorie.
+
+        Returns:
+            Optional[str]: L'URL de la catégorie, ou None si non définie.
+        """
         return self._url
 
     def get_no(self) -> Optional[int]:
-        """Retourne le numéro de la catégorie (s'il existe)."""
+        """
+        Retourne le numéro de la catégorie (s'il existe).
+
+        Returns:
+            Optional[int]: Le numéro de la catégorie, ou None si non défini.
+        """
         return self._no
 
     def get_parent(self) -> Optional[str]:
-        """Retourne le nom de la catégorie parente (s'il y en a une)."""
+        """
+        Retourne le nom de la catégorie parente (s'il y en a une).
+
+        Returns:
+            Optional[str]: Le nom de la catégorie parente, ou None si non définie.
+        """
         return self._parent
 
     def get_role(self) -> Optional[str]:
-        """Retourne le rôle associé à la catégorie."""
+        """
+        Retourne le rôle associé à la catégorie.
+
+        Returns:
+            Optional[str]: Le rôle associé à la catégorie, ou None si non défini.
+        """
         return self._role
 
     # SETTERS
 
     def set_name(self, name: str) -> None:
-        """Définit le nom de la catégorie."""
+        """
+        Définit le nom de la catégorie.
+
+        Args:
+            name (str): Le nouveau nom de la catégorie.
+        """
         self._name = name
 
     def set_url(self, url: str) -> None:
-        """Définit l'URL de la catégorie."""
+        """
+        Définit l'URL de la catégorie.
+
+        Args:
+            url (str): La nouvelle URL de la catégorie.
+        """
         self._url = url
 
     def set_no(self, no: Optional[int]) -> None:
-        """Définit le numéro de la catégorie."""
+        """
+        Définit le numéro de la catégorie.
+
+        Args:
+            no (Optional[int]): Le nouveau numéro de la catégorie.
+        """
         self._no = no
 
     def set_parent(self, parent: Optional[str]) -> None:
-        """Définit la catégorie parente."""
+        """
+        Définit la catégorie parente.
+
+        Args:
+            parent (Optional[str]): Le nom de la nouvelle catégorie parente.
+        """
         self._parent = parent
 
     def set_role(self, role: Optional[str]) -> None:
-        """Définit le rôle associé à la catégorie."""
+        """
+        Définit le rôle associé à la catégorie.
+
+        Args:
+            role (Optional[str]): Le nouveau rôle associé à la catégorie.
+        """
         self._role = role
