@@ -19,7 +19,9 @@ class Category(Base):
     _name: Mapped[str] = mapped_column("name", String(50), primary_key=True)
 
     # URL associée à la catégorie
-    _url: Mapped[str] = mapped_column("url", String(50))
+    _url: Mapped[Optional[str]] = mapped_column("url",
+                                                String(50),
+                                                nullable=True)
 
     # Numéro optionnel pour ordonner les catégories
     _no: Mapped[Optional[int]] = mapped_column("no")
@@ -45,6 +47,9 @@ class Category(Base):
     # Relation avec les sous-catégories (One-to-Many) sans suppression automatique
     children: Mapped[List["Category"]] = relationship("Category",
                                                       back_populates="parent")
+
+    publications: Mapped[list["Publication"]] = relationship(
+        "Publication", back_populates="category", cascade="save-update")
 
     def __init__(self,
                  name: str,

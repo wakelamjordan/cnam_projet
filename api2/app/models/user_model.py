@@ -44,7 +44,7 @@ class User(Base):
     role: Mapped[Optional["Role"]] = relationship("Role",
                                                   back_populates="users")
     publications: Mapped[list["Publication"]] = relationship(
-        "Publication", back_populates="author",
+        "Publication", back_populates="author_email",
         cascade="save-update")  # Pas de suppression en cascade ici.
 
     # Rest of the methods...

@@ -1,8 +1,11 @@
 from . import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Boolean, ForeignKey
+from sqlalchemy import String, Boolean, ForeignKey, DateTime
 from typing import Optional
 # from app.models.user_model import User
+from datetime import datetime, timezone, date
+
+aware_datetime = datetime.now(timezone.utc)
 
 
 class Publication(Base):
@@ -13,15 +16,20 @@ class Publication(Base):
     _description: Mapped[str] = mapped_column('description', String(200))
     _content: Mapped[str] = mapped_column('content', String())
     _on_line: Mapped[bool] = mapped_column('on_line', Boolean(), default=False)
+    _created_at: Mapped[datetime] = mapped_column("created_at",
+                                                  DateTime(timezone=True),
+                                                  default=aware_datetime)
+    _updated_at: Mapped[Optional[datetime]] = mapped_column("updated_at")
     _revision: Mapped[bool] = mapped_column('revision',
                                             Boolean(),
                                             default=False)
     _author_email: Mapped[str] = mapped_column('author_email', String(50),
                                                ForeignKey("user.email"))
-    _category: Mapped[Optional[str]] = mapped_column('category', String(50))
+    _category: Mapped[Optional[str]] = mapped_column(
+        'category', ForeignKey("category.name"))
 
-    author: Mapped["User"] = relationship("User",
-                                          back_populates="publications")
+    author_email: Mapped["User"] = relationship("User",
+                                                back_populates="publications")
 
     home_page_content: Mapped[Optional["HomePageContent"]] = relationship(
         "HomePageContent", back_populates="publication")
@@ -31,6 +39,9 @@ class Publication(Base):
 
     photos: Mapped[list[Optional["Photo"]]] = relationship(
         "Photo", back_populates="photo", cascade="all, delete-orphan")
+
+    category: Mapped[Optional["Category"]] = relationship(
+        "Category", back_populates="publications")
 
     def __init__(self,
                  title: str,
@@ -73,8 +84,16 @@ class Publication(Base):
             "on_line": self.get_on_line(),
             "revision": self.get_revision(),
             "author_email": self.get_author_email(),
-            "category": self.get_category()
+            "category": self.get_category(),
+            "created_at": self.get_created_at(),
+            "updated_at": self.get_updated_at()
         }
+
+    def get_created_at(self):
+        return self._created_at
+
+    def get_updated_at(self):
+        return self._updated_at
 
     # Getter and Setter for title
     def get_title(self) -> str:
@@ -94,6 +113,15 @@ class Publication(Base):
             title (str) : Le titre à définir.
         """
         self._title = title
+
+    def set_updated_at(self) -> None:
+        """
+        Définit le titre de la publication.
+
+        Paramètres:
+            title (str) : Le titre à définir.
+        """
+        self._updated_at = aware_datetime
 
     # Getter and Setter for slug
     def get_slug(self) -> str:

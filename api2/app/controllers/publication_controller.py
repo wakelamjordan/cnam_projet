@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, Response
-from app.services.publication_service import insert, find_all, delete, toggle_on_line, toggle_revision, find_by_slug
+from app.services.publication_service import insert, find_all, delete, toggle_on_line, toggle_revision, find_by_slug, replace, copy
 # from app.services.user_service import (delete as service_delete, find_by_email
 #                                        as service_find_by_email, find_all as
 #                                        service_find_all, update as
@@ -9,7 +9,8 @@ from app.services.security_service import insert as service_security_insert
 import string
 import secrets
 from app.errors.user_error import UserNotFoundError, UserEmailDoesExist, UserEmailNotValide, UserPasswordNotValid, UserDataIncomplete
-from app.errors.publication_error import PublicationTitleDoesExist, PublicationSlugDoesExist, DataNotValid, PublicationNotExist, PublicationIsOnLine
+from app.errors.publication_error import PublicationTitleDoesExist, PublicationSlugDoesExist, DataNotValid, PublicationNotExist, PublicationIsOnLine, PublicationNotCategory, PublicationDataNotValid, PublicationCopyAlreadyExist
+from app.errors.category_error import CategoryNotExist
 from app.errors.security_error import AccessDenied
 from datetime import date
 from app.validators.user_validator import User_validator
@@ -63,6 +64,8 @@ class PublicationController:
             return jsonify({"error": str(e)}), 403
         except PublicationSlugDoesExist as e:
             return jsonify({"error": str(e)}), 403
+        except CategoryNotExist as e:
+            return jsonify({"error": str(e)}), 404
 
     @staticmethod
     @publication_blueprint.route('/publication/on_line', methods=['PATCH'])
@@ -84,8 +87,8 @@ class PublicationController:
             return jsonify({"error": str(e)}), 403
         except PublicationNotExist as e:
             return jsonify({"error": str(e)}), 404
-        # except PublicationSlugDoesExist as e:
-        #     return jsonify({"error": str(e)}), 403
+        except PublicationNotCategory as e:
+            return jsonify({"error": str(e)}), 404
 
     @staticmethod
     @publication_blueprint.route('/publication/revision', methods=['PATCH'])
@@ -131,25 +134,70 @@ class PublicationController:
             return jsonify({"error": str(e)}), 403
 
     @staticmethod
-    @publication_blueprint.route('/publication/<string:slug>', methods=['PUT'])
+    @publication_blueprint.route('/publication/copy', methods=['POST'])
     @jwt_required()
-    def _get_one(slug) -> Response:
+    def _cpy() -> Response:
 
         try:
             # UserController._is_admin()
             # User_validator.validate_email(email)
             payload: dict = get_jwt()
-            data: dict = {"slug": slug, "author_email": payload["sub"]}
-            if "role" in payload and payload["role"] == "ROLE_ADMIN":
-                data["role"] = payload["role"]
-            entity_find = find_by_slug(data)
-            return jsonify(entity_find), 200
-        # except UserEmailNotValide as e:
-        #     return jsonify({"error": str(e)}), 415
+            # data: dict = {"slug": slug, "author_email": payload["sub"]}
+            if not "role" in payload or payload["role"] != "ROLE_ADMIN":
+                raise AccessDenied()
+            # entity_find = find_by_slug(data)
+            data: dict = request.json
+            return jsonify(copy(data)), 200
+        except PublicationCopyAlreadyExist as e:
+            return jsonify({"error": str(e)}), 403
         except PublicationNotExist as e:
             return jsonify({"error": str(e)}), 404
         except AccessDenied as e:
             return jsonify({"error": str(e)}), 403
+
+    @staticmethod
+    @publication_blueprint.route('/publication/<string:slug>', methods=['PUT'])
+    @jwt_required()
+    def _replace(slug) -> Response:
+        try:
+            # UserController._is_admin()
+            # User_validator.validate_email(email)
+            payload: dict = get_jwt()
+            data: dict = request.json
+            data["slug_actual"] = slug
+            data["user"] = payload["sub"]
+
+            test_field: dict = [
+                "title", "slug", "description", "content", "category",
+                "author_email"
+            ]
+            for field in test_field:
+                if field not in data:
+                    raise PublicationDataNotValid()
+
+            if "role" in payload and payload["role"] == "ROLE_ADMIN":
+                data["role"] = payload["role"]
+            # entity_find = find_by_slug(data)
+            return jsonify({"message": replace(data)}), 200
+        except PublicationSlugDoesExist as e:
+            return jsonify({"error": str(e)}), 403
+        except PublicationTitleDoesExist as e:
+            return jsonify({"error": str(e)}), 403
+        # except UserEmailNotValide as e:
+        #     return jsonify({"error": str(e)}), 415
+        except CategoryNotExist as e:
+            return jsonify({"error": str(e)}), 404
+        except UserNotFoundError as e:
+            return jsonify({"error": str(e)}), 404
+        except PublicationNotExist as e:
+            return jsonify({"error": str(e)}), 404
+        except AccessDenied as e:
+            return jsonify({"error": str(e)}), 403
+        except PublicationDataNotValid as e:
+            return jsonify({"error": str(e)}), 415
+        except PublicationIsOnLine:
+            return jsonify({"error":
+                            "You can't edit publication on line."}), 403
 
     # @staticmethod
     # @publication_blueprint.route('/<string:email>', methods=['PUT'])

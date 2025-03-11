@@ -30,6 +30,38 @@ class PublicationSlugDoesExist(Exception):
         super().__init__(self.message)
 
 
+class PublicationDoesExist(Exception):
+    """
+    Exception levée lorsqu'aucun utilisateur n'est trouvé.
+
+    Cette exception est levée lorsque l'application tente de récupérer un utilisateur
+    qui n'existe pas dans la base de données.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
+
+    def __init__(self, message="Your publication does exist!"):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PublicationCopyAlreadyExist(Exception):
+    """
+    Exception levée lorsqu'aucun utilisateur n'est trouvé.
+
+    Cette exception est levée lorsque l'application tente de récupérer un utilisateur
+    qui n'existe pas dans la base de données.
+
+    Attributes:
+        message (str): Le message d'erreur associé à l'exception.
+    """
+
+    def __init__(self, message="Your publication copy  exist!"):
+        self.message = message
+        super().__init__(self.message)
+
+
 class DataNotValid(Exception):
     """
     Exception levée lorsqu'aucun utilisateur n'est trouvé.
@@ -65,21 +97,28 @@ class PublicationNotExist(Exception):
 
 
 class PublicationIsOnLine(Exception):
-    """
-    Exception levée lorsqu'aucun utilisateur n'est trouvé.
-
-    Cette exception est levée lorsque l'application tente de récupérer un utilisateur
-    qui n'existe pas dans la base de données.
-
-    Attributes:
-        message (str): Le message d'erreur associé à l'exception.
-    """
-
     # message à rectifier
     def __init__(
         self,
         message="The publication cannot be deleted because it is currently online."
     ):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PublicationNotCategory(Exception):
+    # message à rectifier
+    def __init__(
+        self,
+        message="The publication cannot be on line because don't have category."
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+
+class PublicationDataNotValid(Exception):
+    # message à rectifier
+    def __init__(self, message="Data Not Valid."):
         self.message = message
         super().__init__(self.message)
 
