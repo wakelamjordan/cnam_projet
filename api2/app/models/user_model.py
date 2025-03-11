@@ -39,7 +39,7 @@ class User(Base):
     _login_at: Mapped[Optional[datetime]] = mapped_column("login_at")
 
     _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
-                                                 nullable=True)
+                                                 default='ROLE_USER')
 
     role: Mapped[Optional["Role"]] = relationship("Role",
                                                   back_populates="users")

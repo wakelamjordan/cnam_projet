@@ -64,7 +64,7 @@ class Category(Base):
 
     def __init__(self,
                  name: str,
-                 url: str,
+                 url: Optional[str],
                  no: Optional[int] = None,
                  parent: Optional[str] = None,
                  role: Optional[str] = None):

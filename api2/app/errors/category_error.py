@@ -18,3 +18,9 @@ class CategoryNotExist(Exception):
         """
         self.message = message
         super().__init__(self.message)
+
+
+class CategoryAlreadyExist(Exception):
+
+    def __init__(self, message='Your category name already exist!'):
+        super().__init__(*args)
