@@ -69,16 +69,8 @@ class Category(Base):
 
         Args:
             name (str): Nom de la catégorie.
-            url (str): URL associée à la catégorie.
-            no (Optional[int], optional): Numéro optionnel pour ordonner les catégories. Par défaut None.
-            parent (Optional[str], optional): Nom de la catégorie parente (si applicable). Par défaut None.
-            role (Optional[str], optional): Nom du rôle associé (si applicable). Par défaut None.
         """
         self._name = name
-        # self._url = url
-        # self._no = no
-        # self._parent = parent
-        # self._role = role
 
     def __repr__(self) -> str:
         """
@@ -104,7 +96,13 @@ class Category(Base):
             "role": self._role
         }
 
-    def get_publications(self) -> dict:
+    def get_publications(self) -> List["Publication"]:
+        """
+        Retourne les publications associées à la catégorie.
+
+        Returns:
+            List[Publication]: Liste des publications associées.
+        """
         return self.publications
 
     # GETTERS

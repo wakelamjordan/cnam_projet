@@ -780,6 +780,173 @@ def test_publication_delete_user_logged(client, headers):
     # assert publications[0]['author_email'] == "user1@mail.com"
 
 
+# ---------------------publication---------------------
+def test_publication_category_get_visiteur(client):
+    response = client.get('/category')
+    data: list = response.json
+
+    for category in data:
+        assert category['role'] == None
+    assert response.status_code == 200
+
+
+def test_publication_category_get_user(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    response = client.get('/category', headers=headers_with_token)
+    data: list = response.json
+
+    for category in data:
+        assert category['role'] == None or 'ROLE_USER'
+    assert response.status_code == 200
+
+
+def test_publication_category_get_admin(client, headers):
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    response = client.get('/category', headers=headers_with_token)
+    data: list = response.json
+
+    for category in data:
+        assert category['role'] == None or 'ROLE_USER' or 'ROLE_ADMIN'
+    assert response.status_code == 200
+
+
+def test_publication_category_post_visiteur(client):
+    data: dict = {
+        "name": "Technology to delete",
+        "no": 0,
+        "parent": "Technology",
+        "role": "ROLE_ADMIN",
+        "url": "/technology/to_delete"
+    }
+    response = client.post('/category', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+
+def test_publication_category_post_user(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    data: dict = {
+        "name": "Technology to delete",
+        "no": 0,
+        "parent": "Technology",
+        "role": "ROLE_ADMIN",
+        "url": "/technology/to_delete"
+    }
+    response = client.post('/category', json=data, headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+
+def test_publication_category_post_admin(client, headers):
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    data: dict = {
+        "name": "Technology to delete",
+        "no": 0,
+        "parent": "Technology",
+        "role": "ROLE_ADMIN",
+        "url": "/technology/to_delete"
+    }
+    response = client.post('/category', json=data, headers=headers_with_token)
+    assert response.json.get('category') == "Technology to delete"
+    assert response.status_code == 200
+
+
+def test_publication_category_put_visiteur(client):
+    data: dict = {
+        "category": "Technology to delete",
+        "data": {
+            "name": "Technology Put",
+            "no": 0,
+            "parent": "Technology",
+            "role": "ROLE_ADMIN",
+            "url": "/technology/to_delete"
+        }
+    }
+    response = client.put('/category', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+
+def test_publication_category_put_user(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    data: dict = {
+        "category": "Technology to delete",
+        "data": {
+            "name": "Technology Put",
+            "no": 0,
+            "parent": "Technology",
+            "role": "ROLE_ADMIN",
+            "url": "/technology/to_delete"
+        }
+    }
+    response = client.put('/category', json=data, headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+
+def test_publication_category_put_admin(client, headers):
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    data: dict = {
+        "category": "Technology to delete",
+        "data": {
+            "name": "Technology Put",
+            "no": 0,
+            "parent": "Technology",
+            "role": "ROLE_ADMIN",
+            "url": "/technology/to_delete"
+        }
+    }
+    response = client.put('/category', json=data, headers=headers_with_token)
+    assert response.json.get('category') == "Technology Put"
+    assert response.status_code == 200
+
+
+def test_publication_category_delete_visiteur(client):
+    data: dict = {"name": "Technology to delete"}
+    response = client.delete('/category', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+
+def test_publication_category_delete_user(client, headers):
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    data: dict = {"name": "Technology to delete"}
+    response = client.delete('/category',
+                             json=data,
+                             headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+
+def test_publication_category_delete_admin(client, headers):
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    data: dict = {"name": "Technology Put"}
+    response = client.delete('/category',
+                             json=data,
+                             headers=headers_with_token)
+    assert response.json.get('category') == "Technology Put"
+    assert response.status_code == 200
+
+
+# ---------------------publication---------------------
+
+
 # -user-------------------delete
 def test_user_delete_admin(client, headers):
     """

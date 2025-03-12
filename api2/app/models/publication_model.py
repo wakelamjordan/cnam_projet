@@ -8,6 +8,21 @@ aware_datetime = datetime.now(timezone.utc)
 
 
 class Publication(Base):
+    """
+    Modèle représentant une publication.
+
+    Attributes:
+        _title (str): Le titre de la publication.
+        _slug (str): Le slug unique de la publication.
+        _description (str): La description de la publication.
+        _content (str): Le contenu de la publication.
+        _on_line (bool): Indique si la publication est en ligne.
+        _created_at (datetime): La date de création de la publication.
+        _updated_at (Optional[datetime]): La date de la dernière mise à jour de la publication.
+        _revision (bool): Indique si la publication est en révision.
+        _author_email (Optional[str]): L'email de l'auteur de la publication.
+        _category (Optional[str]): La catégorie de la publication.
+    """
     __tablename__ = "publication"
 
     _title: Mapped[str] = mapped_column('title', String(100), primary_key=True)
@@ -29,19 +44,15 @@ class Publication(Base):
 
     author_email: Mapped["User"] = relationship("User",
                                                 back_populates="publications")
-
     home_page_content: Mapped[Optional["HomePageContent"]] = relationship(
         "HomePageContent", back_populates="publication")
-
     events: Mapped[list[Optional["PublicationEvent"]]] = relationship(
         "PublicationEvent", back_populates="publication")
-
     publication_photos: Mapped[list[
         Optional["PublicationPhoto"]]] = relationship(
             "PublicationPhoto",
             back_populates="publication",
             cascade="all, delete-orphan")
-
     category: Mapped[Optional["Category"]] = relationship(
         "Category", back_populates="publications")
 
@@ -125,7 +136,6 @@ class Publication(Base):
         """
         return self._updated_at
 
-    # Getter and Setter for title
     def get_title(self) -> str:
         """
         Retourne le titre de la publication.
@@ -150,7 +160,6 @@ class Publication(Base):
         """
         self._updated_at = aware_datetime
 
-    # Getter and Setter for slug
     def get_slug(self) -> str:
         """
         Retourne le slug de la publication.
@@ -169,7 +178,6 @@ class Publication(Base):
         """
         self._slug = slug
 
-    # Getter and Setter for description
     def get_description(self) -> str:
         """
         Retourne la description de la publication.
@@ -188,7 +196,6 @@ class Publication(Base):
         """
         self._description = description
 
-    # Getter and Setter for content
     def get_content(self) -> str:
         """
         Retourne le contenu de la publication.
@@ -207,7 +214,6 @@ class Publication(Base):
         """
         self._content = content
 
-    # Getter and Setter for on_line
     def get_on_line(self) -> bool:
         """
         Retourne l'état en ligne de la publication.
@@ -226,7 +232,6 @@ class Publication(Base):
         """
         self._on_line = on_line
 
-    # Getter and Setter for revision
     def get_revision(self) -> bool:
         """
         Retourne l'état de révision de la publication.
@@ -245,7 +250,6 @@ class Publication(Base):
         """
         self._revision = revision
 
-    # Getter and Setter for author_email
     def get_author_email(self) -> Optional[str]:
         """
         Retourne l'email de l'auteur de la publication.
@@ -264,7 +268,6 @@ class Publication(Base):
         """
         self._author_email = author_email
 
-    # Getter and Setter for category
     def get_category(self) -> Optional[str]:
         """
         Retourne la catégorie de la publication.

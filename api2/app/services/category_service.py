@@ -9,6 +9,20 @@ from app.validators.category_validator import category_insert_dict as validator_
 
 
 def find_all(role_auth: str = None):
+    """
+    Récupère toutes les catégories en fonction du rôle d'autorisation.
+
+    Cette fonction filtre les catégories selon le rôle d'autorisation fourni.
+    Si aucun rôle n'est fourni, elle retourne les catégories sans rôle.
+    Si le rôle est 'ROLE_USER', elle retourne les catégories sans rôle ou avec le rôle 'ROLE_USER'.
+    Si le rôle est 'ROLE_ADMIN', elle retourne toutes les catégories.
+
+    Args:
+        role_auth (str, optional): Le rôle d'autorisation de l'utilisateur. Par défaut None.
+
+    Returns:
+        List[dict]: Liste des catégories sous forme de dictionnaires.
+    """
     db: Session = next(get_db())
     try:
         match role_auth:
@@ -30,6 +44,23 @@ def find_all(role_auth: str = None):
 
 
 def insert(category_dict: dict):
+    """
+    Insère une nouvelle catégorie dans la base de données.
+
+    Cette fonction valide le dictionnaire de catégorie, vérifie l'unicité du nom et de l'URL,
+    puis insère la nouvelle catégorie dans la base de données.
+
+    Args:
+        category_dict (dict): Dictionnaire contenant les données de la nouvelle catégorie.
+
+    Returns:
+        str: Le nom de la catégorie insérée.
+
+    Raises:
+        CategoryAlreadyExist: Si le nom ou l'URL de la catégorie existe déjà.
+        CategoryNotExist: Si la catégorie parente ou le rôle spécifié n'existe pas.
+        RoleNotFoundError: Si le rôle spécifié n'existe pas.
+    """
     db: Session = next(get_db())
     try:
         validator_category_insert_dict(category_dict)
@@ -74,6 +105,23 @@ def insert(category_dict: dict):
 
 
 def delete(category_dict: dict):
+    """
+    Supprime une catégorie de la base de données.
+
+    Cette fonction vérifie si la catégorie existe, puis la supprime si elle n'a pas de publications
+    ou de sous-catégories associées.
+
+    Args:
+        category_dict (dict): Dictionnaire contenant le nom de la catégorie à supprimer.
+
+    Returns:
+        str: Le nom de la catégorie supprimée.
+
+    Raises:
+        CategoryNotExist: Si la catégorie n'existe pas.
+        CategoryHavePublication: Si la catégorie a des publications associées.
+        CategoryHaveSub: Si la catégorie a des sous-catégories.
+    """
     db = next(get_db())
     try:
         category: Category = db.query(Category).filter(
@@ -104,6 +152,23 @@ def delete(category_dict: dict):
 
 
 def put(category_dict: dict):
+    """
+    Met à jour une catégorie existante dans la base de données.
+
+    Cette fonction valide les données de mise à jour, vérifie l'unicité du nom et de l'URL,
+    puis met à jour la catégorie existante.
+
+    Args:
+        category_dict (dict): Dictionnaire contenant le nom de la catégorie à mettre à jour et les nouvelles données.
+
+    Returns:
+        str: Le nom de la catégorie mise à jour.
+
+    Raises:
+        CategoryNotValid: Si les données de la catégorie ne sont pas valides.
+        CategoryNotExist: Si la catégorie ou la catégorie parente n'existe pas.
+        RoleNotFoundError: Si le rôle spécifié n'existe pas.
+    """
     db: Session = next(get_db())
     try:
         category_to_put: Category = db.query(Category).filter(
@@ -129,15 +194,12 @@ def put(category_dict: dict):
                     'The name or the url is not disponible.')
             if data_to_put['parent'] and not db.query(Category).filter(
                     Category._name == data_to_put['parent']).first():
-                # test exist parent
                 raise CategoryNotExist('Parent does not exist!')
 
             if data_to_put['role'] and not db.query(Role).filter(
                     Role._name == data_to_put['role']).first():
-                # test exist role
                 raise RoleNotFoundError()
 
-        # remplacer les valeurs
         properties_to_maj: list = ['name', 'no', 'parent', 'role', 'url']
         for property in properties_to_maj:
             set_method_name: str = f'set_{property}'
@@ -147,12 +209,6 @@ def put(category_dict: dict):
         db.commit()
         return category_to_put.get_name()
     except CategoryNotValid:
-        db.rollback()
-        raise
-    except CategoryNotValid:
-        db.rollback()
-        raise
-    except CategoryHavePublication:
         db.rollback()
         raise
     except CategoryNotExist:
