@@ -2,6 +2,7 @@ from app.controllers.user_controller import user_blueprint
 from app.controllers.security_controller import security_blueprint
 from app.controllers.publication_controller import publication_blueprint
 from app.controllers.category_controller import category_blueprint
+from app.controllers.role_controller import role_blueprint
 
 
 def register_blueprints(app):
@@ -21,3 +22,4 @@ def register_blueprints(app):
     app.register_blueprint(security_blueprint)
     app.register_blueprint(publication_blueprint)
     app.register_blueprint(category_blueprint, url_prefix='/category')
+    app.register_blueprint(role_blueprint, url_prefix='/role')

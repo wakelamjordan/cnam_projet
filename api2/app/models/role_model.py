@@ -60,7 +60,7 @@ class Role(Base):
         Returns:
             dict: Dictionnaire contenant les informations du rôle.
         """
-        return {"name": self._name, "inherited_roles": self.inherited_roles}
+        return {"name": self._name}
 
     # Getters
     def get_name(self) -> str:
