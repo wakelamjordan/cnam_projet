@@ -1,7 +1,7 @@
 class RoleNotFoundError(Exception):
     """Exception levée lorsqu'aucun utilisateur n'est trouvé."""
 
-    def __init__(self, message="User not found!"):
+    def __init__(self, message="Role not found!"):
         self.message = message
         super().__init__(self.message)
 

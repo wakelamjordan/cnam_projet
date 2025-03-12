@@ -54,6 +54,8 @@ def init_db():
     from .publication_model import Publication
     from .publication_photo_model import PublicationPhoto
     from .role_model import Role
+    # from .role_model import RoleHierarchy
+    # from .role_hierarchy import RoleHierarchy
     from .token_model import Token
     from .user_model import User  # Importation du modèle User pour qu'il soit enregistré dans la base
     Base.metadata.create_all(

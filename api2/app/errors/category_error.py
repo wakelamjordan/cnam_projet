@@ -22,5 +22,30 @@ class CategoryNotExist(Exception):
 
 class CategoryAlreadyExist(Exception):
 
-    def __init__(self, message='Your category name already exist!'):
-        super().__init__(*args)
+    def __init__(self, message="Category already exists"):
+        super().__init__(message)
+
+
+class CategoryNotValid(Exception):
+
+    def __init__(self, message='Your category doesn\'t valid!'):
+        self.message = message
+        super().__init__(self.message)
+
+
+class CategoryHavePublication(Exception):
+
+    def __init__(
+            self,
+            message='This category can\'t be deleted he had Publication.'):
+        self.message = message
+        super().__init__(self.message)
+
+
+class CategoryHaveSub(Exception):
+
+    def __init__(
+            self,
+            message='This category can\'t be deleted he had sub-category.'):
+        self.message = message
+        super().__init__(self.message)

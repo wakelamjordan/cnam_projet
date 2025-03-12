@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from . import Base
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, Integer
 from typing import Optional, List
 # from app.models.role_model import Role
 
@@ -44,7 +44,8 @@ class Category(Base):
                                                    nullable=True)
 
     # Clé étrangère optionnelle : Référence à un rôle
-    _role: Mapped[Optional[str]] = mapped_column(ForeignKey("role.name"),
+    _role: Mapped[Optional[str]] = mapped_column('role',
+                                                 ForeignKey("role.name"),
                                                  nullable=True)
 
     # Relation avec le rôle (Many-to-One)
@@ -62,12 +63,7 @@ class Category(Base):
     publications: Mapped[List["Publication"]] = relationship(
         "Publication", back_populates="category", cascade="save-update")
 
-    def __init__(self,
-                 name: str,
-                 url: Optional[str],
-                 no: Optional[int] = None,
-                 parent: Optional[str] = None,
-                 role: Optional[str] = None):
+    def __init__(self, name: str):
         """
         Initialise une nouvelle catégorie.
 
@@ -79,10 +75,10 @@ class Category(Base):
             role (Optional[str], optional): Nom du rôle associé (si applicable). Par défaut None.
         """
         self._name = name
-        self._url = url
-        self._no = no
-        self._parent = parent
-        self._role = role
+        # self._url = url
+        # self._no = no
+        # self._parent = parent
+        # self._role = role
 
     def __repr__(self) -> str:
         """
@@ -107,6 +103,9 @@ class Category(Base):
             "parent": self._parent,
             "role": self._role
         }
+
+    def get_publications(self) -> dict:
+        return self.publications
 
     # GETTERS
 
@@ -182,6 +181,8 @@ class Category(Base):
         Args:
             no (Optional[int]): Le nouveau numéro de la catégorie.
         """
+        if no is not None and not isinstance(no, int):
+            raise ValueError("No Field should be integer.")
         self._no = no
 
     def set_parent(self, parent: Optional[str]) -> None:
