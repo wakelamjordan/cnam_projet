@@ -44,8 +44,9 @@ class Publication(Base):
 
     author_email: Mapped["User"] = relationship("User",
                                                 back_populates="publications")
-    home_page_content: Mapped[Optional["HomePageContent"]] = relationship(
-        "HomePageContent", back_populates="publication")
+    home_page_contents: Mapped[list[
+        Optional["HomePageContent"]]] = relationship(
+            "HomePageContent", back_populates="publication")
     events: Mapped[list[Optional["PublicationEvent"]]] = relationship(
         "PublicationEvent", back_populates="publication")
     publication_photos: Mapped[list[

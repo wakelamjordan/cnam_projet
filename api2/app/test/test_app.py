@@ -945,6 +945,113 @@ def test_publication_category_delete_admin(client, headers):
 
 
 # ---------------------publication---------------------
+# ---------------------home_page_content---------------------
+def test_home_page_content_get(client, headers):
+    response = client.get('/home_page_content')
+    assert response.status_code == 200
+
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    response = client.get('/home_page_content', headers=headers_with_token)
+    assert response.status_code == 200
+
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    response = client.get('/home_page_content', headers=headers_with_token)
+    assert response.status_code == 200
+
+
+def test_home_page_content_post(client, headers):
+    data: dict = {
+        "name": "test",
+        "element": "#test",
+        "description": "test",
+        "publication": None
+    }
+    response = client.post('/home_page_content', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    response = client.post('/home_page_content',
+                           json=data,
+                           headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    response = client.post('/home_page_content',
+                           json=data,
+                           headers=headers_with_token)
+    assert response.json.get('home_page_content') == "test"
+    assert response.status_code == 200
+
+
+def test_home_page_content_put(client, headers):
+    data: dict = {
+        "name": "test",
+        "put": {
+            "name": "test_put",
+            "element": "#test_put",
+            "description": "test",
+            "publication": None
+        }
+    }
+    response = client.put('/home_page_content', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    response = client.put('/home_page_content',
+                          json=data,
+                          headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    response = client.put('/home_page_content',
+                          json=data,
+                          headers=headers_with_token)
+    assert response.json.get('home_page_content') == "test_put"
+    assert response.status_code == 200
+
+
+def test_home_page_content_delete(client, headers):
+    data: dict = {"name": "test_put"}
+    response = client.delete('/home_page_content', json=data)
+    assert response.json.get('msg') == 'Missing Authorization Header'
+    assert response.status_code == 401
+
+    global USER_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {USER_TOKEN}'
+    response = client.delete('/home_page_content',
+                             json=data,
+                             headers=headers_with_token)
+    assert response.json.get('error') == 'Access Denied'
+    assert response.status_code == 403
+
+    global ADMIN_TOKEN
+    headers_with_token = headers
+    headers_with_token['Authorization'] = f'Bearer {ADMIN_TOKEN}'
+    response = client.delete('/home_page_content',
+                             json=data,
+                             headers=headers_with_token)
+    assert response.json.get('home_page_content') == "test_put"
+    assert response.status_code == 200
+
+
+# ---------------------home_page_content---------------------
 
 
 # -user-------------------delete
