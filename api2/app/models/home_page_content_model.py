@@ -40,7 +40,7 @@ class HomePageContent(Base):
 
     # Relation avec la publication associée
     publication: Mapped[Optional["Publication"]] = relationship(
-        "Publication", back_populates="home_page_content")
+        "Publication", back_populates="home_page_contents")
 
     def __init__(self,
                  name: str,
