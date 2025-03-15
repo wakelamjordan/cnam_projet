@@ -12,7 +12,7 @@ class Photo(Base):
     _path: Mapped[str] = mapped_column("path", String(50), primary_key=True)
 
     # Nom de la photo
-    _name: Mapped[str] = mapped_column("name", String(50))
+    _name: Mapped[str] = mapped_column("name", String(50), unique=True)
 
     # Description de la photo
     _description: Mapped[str] = mapped_column("description", String(50))
@@ -30,7 +30,7 @@ class Photo(Base):
     #     back_populates="photo",
     #     cascade="all, delete-orphan")
 
-    def __init__(self, path: str, name: str = "", description: str = ""):
+    def __init__(self, name: str = "", description: str = ""):
         """
         Initialise une instance de Photo.
 
@@ -39,7 +39,6 @@ class Photo(Base):
             name (str, optional): Nom de la photo. Défaut à une chaîne vide.
             description (str, optional): Description de la photo. Défaut à une chaîne vide.
         """
-        self._path = path
         self._name = name
         self._description = description
 

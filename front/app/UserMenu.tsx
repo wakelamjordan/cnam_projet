@@ -30,7 +30,7 @@ function UserMenu() {
       >
         <div className="w-10 h-10 rounded-full bg-slate-500 capitalize relative">
           <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-lg font-bold">
-            {user.lastName[0]}
+            {user.lastname[0]}
           </span>
         </div>
       </div>

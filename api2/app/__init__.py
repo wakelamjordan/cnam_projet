@@ -3,6 +3,7 @@ from app.controllers import register_blueprints
 from app.models import init_db
 from app.config import Config, Test_config, limiter
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 import os
 from flask_mail import Mail
 
@@ -20,6 +21,7 @@ def create_app():
         app.config.from_object(Config)
     with app.app_context():
         init_db()
+    CORS(app, origins=["http://localhost:3000"])
     limiter.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)

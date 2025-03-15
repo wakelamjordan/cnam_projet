@@ -4,6 +4,7 @@ from app.controllers.publication_controller import publication_blueprint
 from app.controllers.category_controller import category_blueprint
 from app.controllers.role_controller import role_blueprint
 from app.controllers.home_page_content_controller import home_page_content_blueprint
+from app.controllers.photo_controller import photo_blueprint
 
 
 def register_blueprints(app):
@@ -26,3 +27,4 @@ def register_blueprints(app):
     app.register_blueprint(role_blueprint, url_prefix='/role')
     app.register_blueprint(home_page_content_blueprint,
                            url_prefix='/home_page_content')
+    app.register_blueprint(photo_blueprint, url_prefix='/photo')

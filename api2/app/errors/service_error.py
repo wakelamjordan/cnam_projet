@@ -1,5 +1,5 @@
 class ResultEmpty(Exception):
-
+    # 404
     def __init__(self, message: str = "No found error!"):
         self.message = message
         super().__init__(self.message)
@@ -13,6 +13,6 @@ class EntryUnavailableError(Exception):
 
 
 class InvalidEntryError(Exception):
-
+    # 400
     def __init__(self, message: str = "Data is incomplete or invalid!"):
         super().__init__(message)

@@ -1,36 +1,46 @@
 "use client";
 import { useState } from "react";
 
-function page() {
+function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [errorMessage, setErrorMessage] = useState("");
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email == "admin@gmail.com" && password == "1234") {
-      const today = new Date(Date.now());
-      today.setHours(today.getHours() + 1);
-      const user = {
-        firstName: "admin",
-        lastName: "adminjr",
-        email: "admin@gmail.com",
-        birthAt: "1990-01-01",
-        loginAt: "2025-02-10",
-        createdAt: "2025-01-10",
-        role: "admin",
-      };
 
-      document.cookie =
-        `user=${encodeURIComponent(JSON.stringify(user))}; expires=` +
-        today.toUTCString() +
-        "; path=/";
-      window.location.href = "/";
-    } else {
-      setErrorMessage("error");
+    try {
+      const response = await fetch("http://localhost:5000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Assuming the server returns a user object upon successful login
+        const user = data.user;
+
+        const today = new Date(Date.now());
+        today.setHours(today.getHours() + 1);
+
+        document.cookie =
+          `user=${encodeURIComponent(JSON.stringify(user))}; expires=` +
+          today.toUTCString() +
+          "; path=/";
+        window.location.href = "/";
+      } else {
+        setErrorMessage("Email ou mot de passe incorrect!");
+      }
+    } catch (error) {
+      setErrorMessage("Une erreur est survenue lors de la connexion.");
     }
-  }
+  };
 
   return (
     <main className="mt-[1rem] flex justify-center items-center flex-col">
@@ -51,7 +61,7 @@ function page() {
                 d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span>Email ou mot de passe incorrect!</span>
+            <span>{errorMessage}</span>
           </div>
         )}
 
@@ -105,4 +115,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

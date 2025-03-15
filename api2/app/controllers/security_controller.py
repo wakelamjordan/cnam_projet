@@ -51,6 +51,11 @@ class SecurityController:
 
             return jsonify({
                 "message": "Login successful",
+                "user": {
+                    "firstname": user["firstname"],
+                    "lastname": user["lastname"],
+                    "role": user["role"]
+                },
                 "token": access_token
             }), 200
         except UserEmailNotValide as e:

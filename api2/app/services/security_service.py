@@ -43,6 +43,9 @@ def login(entity_login: dict) -> dict:
         return {
             "email": entity.get_email(),
             "firstname": entity.get_firstname(),
+            "lastname": entity.get_lastname(),
+            "birth_at": entity.get_birth_at(),
+            "login_at": entity.get_login_at(),
             "role": entity.get_role()
         }
     finally:

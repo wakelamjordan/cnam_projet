@@ -36,6 +36,10 @@ class Config:
     # MAIL_SUPPRESS_SEND: bool = app.testing
     MAIL_ASCII_ATTACHMENTS: bool = False
 
+    UPLOAD_FOLDER = './static/img'
+
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 
 class Test_config(Config):
     """
