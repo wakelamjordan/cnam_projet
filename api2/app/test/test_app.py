@@ -52,7 +52,8 @@ def test_login_admin(client, headers):
 
     assert response.status_code == 200
     assert response.json.get("message") == "Login successful"
-    ADMIN_TOKEN = response.json.get("token")
+    user = response.json.get("user")
+    ADMIN_TOKEN = user['token']
 
 
 def test_login_false(client, headers):
@@ -112,7 +113,8 @@ def test_login_user(client, headers):
 
     assert response.status_code == 200
     assert response.json.get("message") == "Login successful"
-    USER_TOKEN = response.json.get("token")
+    user = response.json.get("user")
+    USER_TOKEN = user['token']
 
 
 # ------------------new

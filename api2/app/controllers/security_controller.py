@@ -1,15 +1,17 @@
-from flask import Blueprint, request, jsonify
-from app.services.security_service import login as login_service, password_reset as reset_service, token_check, token_insert, token_delete
+from flask import Blueprint, request, jsonify, render_template, url_for
+from app.services.security_service import login as login_service, password_reset as reset_service, token_check, token_insert, token_delete, send_email, make_link
 from app.errors.security_error import LoginError, TokenAlreadyUsed
 from app.config import limiter
 from flask_limiter.errors import RateLimitExceeded
-from flask_jwt_extended import create_access_token, decode_token
+from flask_jwt_extended import create_access_token, decode_token, jwt_required, get_jwt
 from datetime import timedelta, date
 from app.validators.user_validator import User_validator
 from app.errors.user_error import UserEmailNotValide
-from app.services.user_service import update
+from app.services.user_service import update, find_by_email, update, check_email
 from app.controllers.user_controller import generate_password_hash
 from app.errors.user_error import UserNotFoundError, UserPasswordNotValid
+import datetime
+import urllib.parse
 
 security_blueprint = Blueprint('security', __name__)
 
@@ -52,11 +54,9 @@ class SecurityController:
             return jsonify({
                 "message": "Login successful",
                 "user": {
-                    "firstname": user["firstname"],
-                    "lastname": user["lastname"],
-                    "role": user["role"]
+                    "lastname": user["lastname"][0],
+                    "token": access_token
                 },
-                "token": access_token
             }), 200
         except UserEmailNotValide as e:
             return jsonify({"error": str(e)}), 415
@@ -204,3 +204,104 @@ class SecurityController:
             "error": "Too many requests",
             "message": str(e.description)
         }), 429
+
+    @staticmethod
+    @security_blueprint.route('/profil', methods=['GET'])
+    @jwt_required()
+    @limiter.limit("5/minute")
+    def profil():
+        try:
+            # data: dict = request.json
+
+            payload: dict = get_jwt()
+            # return jsonify({"rere": payload})
+
+            # User_validator.validate_psw(data["password"])
+
+            return jsonify({"user": find_by_email({"email":
+                                                   payload['sub']})}), 200
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
+
+    @staticmethod
+    @security_blueprint.route('/profil', methods=['PATCH'])
+    @jwt_required()
+    @limiter.limit("5/minute")
+    def profil_edit():
+        try:
+            data: dict = request.json
+
+            payload: dict = get_jwt()
+            # return jsonify({"rere": payload})
+
+            # User_validator.validate_psw(data["password"])
+            if 'birth_at' in data:
+                year, month, day = map(int, data['birth_at'].split('-'))
+                data['birth_at'] = date(year, month, day)
+
+            # vérifier si email
+            if 'email' in data:
+                if check_email(data):
+                    del data['email']
+                else:
+                    token_new = create_access_token(
+                        payload['sub'],
+                        additional_claims={
+                            "type": "inscription_complete",
+                            "new_email": data['email']
+                        },
+                        expires_delta=timedelta(minutes=30))
+
+                    token_insert(token_new)
+
+                    result: dict = find_by_email({'email': payload['sub']})
+                    params: dict = {"token": token_new}
+                    params = urllib.parse.urlencode(params)
+                    template = render_template(
+                        "mail/email_new.html",
+                        user_name=result["firstname"],
+                        # reset_url=url_for("security.email_new",
+                        #                   token=token_new,
+                        #                   _external=True),
+                        reset_url=
+                        f'http://localhost:3000/profil/email_new?{params}',
+                        current_year=datetime.datetime.today().year)
+
+                    send_email("Changement d'email", [payload["sub"]],
+                               template)
+                    del data['email']
+            # si email on verifie en scred la disponibilité
+
+            # si pas dispo on retire le mail des data et on poursui si il ya d'autres data
+
+            # si dispo on fabrique un token avec sub actuel et new addresse
+            # on le stock dans token
+            # et on l'envoi à  la new adresse
+            # et faire une méthod pour valider une nouvelle adresse
+            if not data:
+                return jsonify({"user": payload["sub"]}), 200
+            else:
+                return jsonify({"user": update(data, payload['sub'])}), 200
+        except UserEmailNotValide as e:
+            return jsonify({"error": str(e)}), 415
+        # except UserNotFoundError as e:
+        #     pass
+
+    @staticmethod
+    @security_blueprint.route('/email_new', methods=['POST'])
+    @limiter.limit("5/minute")
+    def email_new():
+        """
+        Decodes the token and updates the user's email.
+        
+        Returns:
+            JSON: Confirmation message or an error if the token is invalid.
+        """
+        try:
+            data: dict = request.json
+            payload: dict = decode_token(data['token'])
+            update({"email": payload['new_email']}, payload['sub'])
+            token_delete(data['token'])
+            return jsonify({"message": "Email updated successfully"}), 200
+        except (UserEmailNotValide, TokenAlreadyUsed) as e:
+            return jsonify({"error": str(e)}), 415

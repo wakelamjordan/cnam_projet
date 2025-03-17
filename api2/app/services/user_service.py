@@ -222,3 +222,28 @@ def update(entity_dict: dict, email: str) -> dict:
         raise
     finally:
         db.close()
+
+
+def check_email(entity_dict: dict) -> bool:
+    """
+    Finds a user in the database based on their email.
+
+    Parameters:
+        entity_dict (dict): A dictionary containing the email of the user to search for.
+
+    Returns:
+        dict: The user's information, excluding the password.
+
+    Raises:
+        UserNotFoundError: If the user is not found.
+    """
+    db: Session = next(get_db())
+    try:
+        entity = db.query(Entity).filter(
+            Entity._email == entity_dict["email"]).first()
+        if not entity:
+            return False
+        return True
+    except:
+        db.rollback()
+        raise
