@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 
 function page() {
   const [user, setUser] = useState(null);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
+  // const [shouldRedirect, setShouldRedirect] = useState(false);
+  const [passwordIsReset, setPasswordIsReset] = useState(false);
+  const [handleUser, setHandleUser] = useState({});
 
   useEffect(() => {
     if (!GetCookie({ name: "user" })) {
@@ -14,9 +16,9 @@ function page() {
     setUser(JSON.parse(decodeURIComponent(GetCookie({ name: "user" }))));
   }, []);
 
-  if (shouldRedirect) {
-    redirect("/");
-  }
+  // if (shouldRedirect) {
+  //   redirect("/");
+  // }
 
   if (user === null) {
     return (
@@ -25,7 +27,7 @@ function page() {
       </main>
     );
   }
-  const [handleUser, setHandleUser] = useState({});
+  
   //   let firstName = "";
   //   let lastName = "";
   //   let birthAt = "";
@@ -62,7 +64,6 @@ function page() {
     window.location.href = "/profil";
   }
 
-  const [passwordIsReset, setPasswordIsReset] = useState(false);
   function passwordReset() {
     if (confirm("Confirmer la demande de réinitialisation ?")) {
       setPasswordIsReset(true);
